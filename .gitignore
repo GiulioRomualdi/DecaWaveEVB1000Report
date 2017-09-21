@@ -224,3 +224,7 @@ TSWLatexianTemp*
 
 # generation script
 generate
+
+#emacs
+*~
+\#*\#
