@@ -5,12 +5,15 @@
 \usepackage[makeroom]{cancel}
 \usepackage{amsmath}
 
+\usepackage{svg}
+
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{mathtools}
 
 \usepackage{siunitx} 
 
+\usepackage{color}
 \usepackage{manfnt}
 \usepackage{graphicx}
 \usepackage[dvipsnames]{xcolor}
@@ -22,6 +25,24 @@
 \usepackage{media9}
 \usepackage{centernot}
 \usepackage{amsthm}
+
+% listening
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+\usepackage{listings}
+\lstset{language=C,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  basicstyle=\ttfamily
+}
 
 \graphicspath{ {figures/} }
 
@@ -50,5 +71,6 @@ Giulio Romualdi}
 \end{frame}
 
 \input{intro.tex}
-
+\input{ranging.tex}
+\input{autoranging.tex}
 \end{document}
