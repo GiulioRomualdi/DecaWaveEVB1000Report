@@ -18,7 +18,7 @@
       ([xshift=\forestregister{folder indent}]!u.parent anchor) |- (.child anchor)},
     inner sep=1pt},
   this folder size/.style={edge path'/.expanded={%
-      ([xshift=\forestregister{folder indent}]!u.parent anchor) |- (.child anchor) pic[solid]{folder=#1}}, inner ysep=0.6*#1},
+      ([xshift=\forestregister{folder indent}]!u.parent anchor) |- (.child anchor) pic[solid]{folder=#1}}, inner xsep=0.6*#1},
   folder tree indent/.style={before computing xy={l=#1}},
   folder icons/.style={folder, this folder size=#1, folder tree indent=3*#1},
   folder icons/.default={12pt},
@@ -26,26 +26,43 @@
 
 \begin{document}
 \begin{forest}
-  for tree={font=\sffamily, %grow'=0,
+  for tree={font=\sffamily, grow'=0,
     folder indent=.9em, folder icons,
     edge=densely dotted}
   [DecaWaveEVB1000
-    [...]
+    [Libraries]
+    [Libsmod]
+    [Linkers]
     [src
       [application
         [\textcolor{red}{instance.c}, is file]
+        [\textcolor{red}{instance.h}, is file]
+        [instance\_calib.c, is file]
         [\textcolor{red}{instance\_common.c}, is file]
         [\textcolor{red}{main.c}, is file]
-        [\textcolor{red}{instance.h}, is file]
       ]
+      [compiler]
+      [decadriver]
+      [platform]
+      [sys]
       [trilateration
+        [algebric\_trilat.c, is file]
         [\textcolor{violet}{autoranging.c}, is file]
         [\textcolor{violet}{autoranging.h}, is file]
+        [trilat.c, is file]
+        [trilat.h, is file]
       ]
+      [usb]
     ]
+    [TREK1000]
     [usart
+      [circular\_buffer.c, is file]
+      [circular\_buffer.h, is file]
       [\textcolor{violet}{print\_over\_otg\_usb.c}, is file]
-      [\textcolor{violet}{print\_over\_otg\_usb.h}, is file]]
+      [\textcolor{violet}{print\_over\_otg\_usb.h}, is file]
+      [stm32f4\_custom\_USART.c, is file]
+      [stm32f4\_custom\_USART.h, is file]
+    ]
     [DecaRangeRTLS.coproj, is file]
   ]
 \end{forest}
