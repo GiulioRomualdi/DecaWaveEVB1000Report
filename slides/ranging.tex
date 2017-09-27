@@ -1,20 +1,14 @@
 \section{Descrizione della procedura di Ranging}
 \begin{frame}{Two-way Ranging}
-  L'interazione fondamentale tra tag e Ancora Ã¨ il Two-way Ranging:\\
-  \hskip 3px
-  \begin{columns}
-    \begin{column}{0.3\textwidth}
-      \begin{itemize}
-      \item [-] Poll
-      \item [-] Response
-      \item [-] Final
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering
-      \includegraphics[width=\linewidth]{ranging.png}
-    \end{column}
-  \end{columns}
+  Durante l'interazione fondamentale vengono scambiati, tra tag ed ancora,
+  un messaggio di Poll, uno di Risposta ed uno di Final.\\
+  I messaggi di \alert{Poll} e \alert{Final} vengono inviati dal tag a tutte
+  le ancore. \\
+  Il messaggio di \alert{Risposta} viene inviato dall'ancora
+  al tag ed a tutte le altre ancore.
+  \begin{center}
+    \includegraphics[height=10em]{ranging.png}
+  \end{center}
 \end{frame}
 
 \begin{frame}{Two-way Ranging}
@@ -135,5 +129,62 @@
   \item[-] utilizzabile con un solo tag;
   \item[-] $T_{sf} = T_s = \SI{10}{\milli\second}$;
   \item[-] frequenza $ f = \SI{100}{\hertz}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Struttura generale di un messaggio}
+  I messaggi inviati sia dal tag che dalle ancore hanno la seguente struttura
+  \begin{center}
+    \includegraphics[height=3.4em]{message_f.pdf}
+  \end{center}
+  \begin{itemize}
+  \item[-] \lstinline!ctrl_frame!: maschera nella quale, tra le varie cose, viene decisa la modalità di
+    indirizzamento
+  \item[-] \lstinline!seq_num!: sequence number
+  \item[-] \lstinline!pan_id!: ID della rete
+  \item[-] \lstinline!dest_addr!: indirizzo del destinatario
+  \item[-] \lstinline!src_addr!: indirizzo del mittente
+  \item[-] \lstinline!msg_data!: payload (dipende dal tipo di messaggio)
+  \item[-] \lstinline!crc!: cyclic redundandcy check
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Messaggio di Poll - \lstinline!RTLS_DEMO_MSG_TAG_POLL!}
+  \begin{center}
+    \includegraphics[height=3.4em]{message_f_tag_poll.pdf}
+  \end{center}
+  \begin{itemize}
+  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_TAG_POLL!
+  \item[-] \lstinline!rangeNum!: range number della trasmissione
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Messaggio di Final - \lstinline!RTLS_DEMO_MSG_TAG_FINAL!}
+  \begin{center}
+    \includegraphics[height=3.4em]{message_f_tag_final.pdf}
+  \end{center}
+  \begin{itemize}
+  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_TAG_FINAL!
+  \item[-] \lstinline!rangeNum!: range number della trasmissione
+  \item[-] \lstinline!PTXT!: tempo di invio del Poll
+  \item[-] \lstinline!RRXT0!: tempo di ricezione della risposta da ancora 0
+  \item[-] \lstinline!RRXT1!: tempo di ricezione della risposta da ancora 1
+  \item[-] \lstinline!RRXT2!: tempo di ricezione della risposta da ancora 2
+  \item[-] \lstinline!RRXT3!: tempo di ricezione della risposta da ancora 3
+  \item[-] \lstinline!FTXT!: tempo di invio del Final
+  \item[-] \lstinline!VRESP!: maschera della risposte valide ricevute
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Messaggio di Risposta - \lstinline!RTLS_DEMO_MSG_ANCH_RESP!}
+  \begin{center}
+    \includegraphics[height=3.4em]{message_f_anch_resp.pdf}
+  \end{center}
+  \begin{itemize}
+  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_ANCH_RESP!
+  \item[-] \lstinline!RES_TAG_SLP0!: parte alta dello sleep correction calcolato dall'ancora 0
+  \item[-] \lstinline!RES_TAG_SLP1!: parte bassa dello sleep correction calcolato dall'ancora 0
+  \item[-] \lstinline!PREVIOUS_TOF!: tof calcolato al passo precedente dall'ancora
+  \item[-] \lstinline!rangeNum!: range number della trasmissione
   \end{itemize}
 \end{frame}
