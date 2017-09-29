@@ -1,0 +1,16 @@
+\begin{frame}[fragile]{File algebric\_trilat.c}
+  La funzione
+  \begin{lstlisting}
+    int computePosition_mm(float d1,float d2,float d3,float d4, vec3d *best_solution2, float anch_position[][4])
+  \end{lstlisting}
+  utilizza la posizione delle ancore in $\SI{}{\milli\meter}$ calcolate mediante la funzione \lstinline!rangesToPos!
+  \begin{lstlisting}
+    for(index = 0; index<3; index++)
+    {
+      A_mm[index] = anch_position[index][0] * 1000;
+      B_mm[index] = anch_position[index][1] * 1000;
+      C_mm[index] = anch_position[index][2] * 1000;
+      D_mm[index] = anch_position[index][3] * 1000;
+    }
+  \end{lstlisting}
+\end{frame}
