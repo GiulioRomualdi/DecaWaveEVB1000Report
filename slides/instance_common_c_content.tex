@@ -1,6 +1,6 @@
 \begin{frame}[shrink=10]{\lstinline!rxResponseMaskAnc! - Lato ancora \alert{non} master}
   L'invio delle risposte da parte delle ancore viene regolato dalla maschera \lstinline!rxResponseMaskAnc!.
-  Viene mostrato un esempio in cui l'ancora $2$ si comporta da master.
+  Viene mostrato un esempio in cui l'ancora A2 si comporta da master.
   \begin{columns}
     \begin{column}{0.4\textwidth}
       \begin{center}
@@ -17,21 +17,21 @@
     \end{column}
   \end{columns}
   \begin{exampleblock}{Regola generale}
-    E' il turno dell'ancora i-esima di rispondere se il bit in posizione i-esima è il primo diverso da $0$ da destra 
+    È il turno dell'ancora i-esima di rispondere se il bit in posizione i-esima è il primo diverso da $0$ da destra.
   \end{exampleblock}
 \end{frame}
 
 \begin{frame}[shrink = 10]{File instance\_common.c}% - funzioni che gestiscono la maschera \lstinline!rxResponseMaskAnc!}
   \begin{block}{\lstinline!uint8 anch_has_responded()!}
-    Restituisce \lstinline!True! se l'istanza ha già risposto altrimenti restituisce \lstinline!False!
+    Restituisce \lstinline!True! se l'istanza ha già risposto altrimenti restituisce \lstinline!False!.
   \end{block}
   \begin{block}{\lstinline!uint8 anch_tx_or_wait()!}
-    Restituisce \lstinline!True! se l'istanza deve spedire la risposta al tag per poi aggiornare la maschera altrimenti restituisce \lstinline!False!\\
-    \textcolor{dgreen}{Attenzione:} l'ancora i-esima deve rispondere se il bit in posizione i-esima della maschera \lstinline!rxResponseMaskAnc! è il primo bit diverso da $0$
+    Restituisce \lstinline!True! se l'istanza deve spedire la risposta al tag per poi aggiornare la maschera altrimenti restituisce \lstinline!False!\\.
+    \textcolor{dgreen}{Attenzione:} l'ancora i-esima deve rispondere se il bit in posizione i-esima della maschera \lstinline!rxResponseMaskAnc! è il primo bit diverso da $0$.
     da destra
   \end{block}
   \begin{block}{\lstinline!void handle_rx_mask_on_timout()!}
-    Funzione utilizzata per gestire un evento di TimeOut nella procedura di autoranging.\\
+    Gestisce un evento di Timeout di ricezione risposta nella procedura di autoranging.\\
     Trova la posizione del primo bit uguale a $1$ nella maschera \lstinline!rxResponseMaskAnc!. La posizione di questo bit corrisponde all'indice dell'ancora che avrebbe
     dovuto inviare la risposta. Successivamente setta il bit a $0$ così da simulare l'avvenuta ricezione del messaggio.
   \end{block}
@@ -39,11 +39,11 @@
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!int eval_range(double* range, uint32 tof)!}
-    Funzione utilizzata per convertire i tof in distanze espressi in \SI{}{\meter}. Restituisce $0$ se il risultato è negativo o maggiore di \SI{20}{\kilo\meter}, 
+    Converte i tof in distanze espressi in \SI{}{\meter}. Restituisce $0$ se il risultato è negativo o maggiore di \SI{20}{\kilo\meter}, 
     $1$ altrimenti.
   \end{block}
   \begin{block}{\lstinline!void instanceclearcounts()!}
-    Viene aggiunta l'inizializzazione di \lstinline!anchRngArray[i]! e \lstinline!tofAnc!
+    Rispetto alla versione originale di questa funzione viene aggiunta l'inizializzazione di \lstinline!anchRngArray[i]! e \lstinline!tofAnc!
     dove $i$ varia da $0$ a \lstinline!MAX_ANCHOR_LIST_SIZE - 1!
     \begin{lstlisting}
       instance_data[0].anchRngArray[i] = INVALID_TOF;
@@ -54,34 +54,35 @@
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!void instanceclearcounts()!}
-    Viene inizializzato il numero di volte che il Tag invia la sua posizione al Viewer.
+    Rispetto alla versione originale di questa funzione viene anche inizializzato il contatore
+    del numero di invii della posizione del Tag al Viewer.
     \begin{lstlisting}
       instance_data[0].tagPositionSentToViewer = 0;
     \end{lstlisting}
-    \textcolor{dgreen}{Attenzione:} ogni \lstinline!SEND_ANCHOR_POSITION_EVERY_CYCLES! volte che il tag invia la sua posizione al Viewer tramite seriale viene inviata
-    la posizione delle ancore
+    \textcolor{dgreen}{Attenzione:} ogni \lstinline!SEND_ANCHOR_POSITION_EVERY_CYCLES! volte che il tag invia la sua posizione al Viewer tramite seriale viene inviata la posizione delle ancore.
   \end{block}
   \begin{block}{\lstinline!void instance_set_anch_sleep_delay(int sleepdelay)!}
-    Copia in \lstinline!anchSleepTime_ms! il periodo di trasmissione di ogni Poll da parte dell'ancora master
+    Copia in \lstinline!anchSleepTime_ms! il periodo di trasmissione di ogni Poll da parte dell'ancora master.
   \end{block}
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
   \begin{block}{\lstinline!void enable_tag_polling(instance_data_t *inst)!}
-    Inizializza il Tag per la normale procedura di ranging, le istruzioni contenute in questa funzione sono state
-    prese dalla parte relativa al Tag del \lstinline!TA_INIT! originale
+    Inizializza il Tag per la normale procedura di ranging. Viene chiamata
+    dal tag quando si rende conto che la procedura di autoranging è terminata.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!void instance_backtoanchor(instance_data_t *inst)!}
-    Funzione chiamata al termine della procedura di autoranging, oltre a resettare i Timeout
+    Configura un'ancora per funzionare nella modalità standard di ranging.\\
+    Reimposta i Timeout
     \begin{lstlisting}
       dwt_setrxtimeout(0);
       dwt_setpreambledetecttimeout(0);
       dwt_setrxaftertxdelay(0);
     \end{lstlisting}
-    si occupa di informare l'utente attraverso lo schermo LCD che la procedura di autoranging è terminata
+    e si occupa di informare l'utente, attraverso lo schermo LCD, che la procedura di autoranging è terminata
     \begin{lstlisting}
       sprintf((char*)&buff[0], "A:%d AutoRng End", inst->instanceAddress16 & 0x3);
       writetoLCD(16, 1, buff);
@@ -91,7 +92,7 @@
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!void eval_means(instance_data_t *inst)!}
-    Utilizzata per calcolare le medie dei range accumulati durante la fase di autoranging
+    Calcola le medie dei range accumulati durante la fase di autoranging
     \begin{lstlisting}
       for(i = 0; i < MAX_ANCHOR_LIST_SIZE; i++)
       {
@@ -100,13 +101,13 @@
         inst->anchRngArray[i] /= inst->anchRngArrayCounter[i];
       }
     \end{lstlisting}
-    durante il calcolo della media \alert{non} viene considerato il range di un'ancora con se stessa
+    Durante il calcolo della media \alert{non} viene considerato il range di un'ancora con se stessa.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile,shrink=30]{File instance\_common.c}
   \begin{block}{\lstinline!void inst_processrxtimeout(instance_data_t *inst)!}
-    Gestisce il comportamento dell'ancora master in caso di TimeOut.
+    Gestisce il comportamento dell'ancora master in caso di Timeout.\\
     Qualora lo stato precedente fosse \lstinline!TA_TXPOLL_WAIT_SEND! prepara l'ancora all'invio di un nuovo Poll
     \begin{lstlisting}
       inst->instToSleep = TRUE;
@@ -120,7 +121,7 @@
       inst->testAppState = TA_TXE_WAIT;
       inst->nextState = TA_TXPOLL_WAIT_SEND;
     \end{lstlisting}
-    Infine gestisce il comportamento dell'ancora \alert{non} master in caso di TimeOut riabilitando immediatamente la ricezione
+    Infine gestisce il comportamento dell'ancora \alert{non} master in caso di Timeout riabilitando immediatamente la ricezione
     \begin{lstlisting}
       inst->testAppState = TA_RXE_WAIT;
       dwt_setrxtimeout(0);
@@ -130,13 +131,13 @@
 
 \begin{frame}[fragile, shirnk=30]{File instance\_common.c}
   \begin{block}{\lstinline!uint8 anc_rx_reenable()!}
-    Funzione utilizzata per gestire il comportamento dell'ancora master ad ogni ricezione di un messaggio di risposta.\\
+    Gestisce il comportamento dell'ancora master ad ogni ricezione di un messaggio di risposta.\\
     La maschera \lstinline!mask!
     \begin{lstlisting}
     uint8 mask = (~(0x1 << instance_address)) & 0xF;
     \end{lstlisting}
-    viene utilizzata per capire se tutte le ancore hanno risposto ed in quel caso l'istanza si prepara ad inviare il messaggio di Final.\\
-    Nel caso in cui solo alcune risposte sono arrivate e \lstinline!instance_data[0].responseTO > 0! viene riconfigurato il TimeOut e riabilitata
+    viene utilizzata per capire se tutte le ancore hanno risposto ed in tal caso l'istanza si prepara ad inviare il messaggio di Final.\\
+    Nel caso in cui solo alcune risposte sono arrivate e \lstinline!instance_data[0].responseTO > 0! viene riconfigurato il Timeout e riabilitata
     la ricezione 
     \begin{lstlisting}
     dwt_setrxtimeout(fwtoTime_sy * responseTO); 
@@ -146,20 +147,20 @@
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
-  \begin{block}{\lstinline!uint8 anc_rx_reenable()!}
-    Se, infine, secondo la maschera non tutti hanno risposto ma \lstinline!instance_data[0].responseTO <= 0! viene supposto che l'ultimo messaggio
-    arrivato fosse corrotto e viene comunque inviato il Final così da permettere alle ancore che hanno risposto di calcolare il TOF
+  \begin{block}{\lstinline!uint8 anc_rx_reenable()! - continuazione}
+    Infine se, secondo la maschera, non tutti hanno risposto ma \lstinline!instance_data[0].responseTO <= 0! viene
+    rilevata una condizione di errore e viene comunque inviato il Final così da permettere alle ancore che hanno risposto di calcolare il TOF.
   \end{block}
   \begin{block}{\lstinline!uint8 anctxorrxreenable(uint16 sourceAddress)!}
-    Eliminate le parti realtive alla procedura di autoranging già implementata nel firmware originario della DecaWave
+    Eliminate le parti realtive alla procedura di autoranging già implementata nel firmware originario della DecaWave.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile,shrink=30]{File instance\_common.c}
   \begin{block}{\lstinline!uint8 anc_tx_or_rxreenable_autoranging()!}
-    Funzione utilizzata durante la procedura di autoranging dalle ancore non master.
+    Gestisce i turni di invio delle risposte ad un Poll ricevuto da un'ancora master.\\
     Qualora tutte le ancore avessero risposto (i.e. \lstinline!instance_data[0].rxResponseMaskAnc == 0!) l'istanza torna nuovamente in ricezione, disabilitando tutti i
-    TimeOut, in attesa del messaggio di Final da parte dell'ancora master 
+    Timeout, in attesa del messaggio di Final da parte dell'ancora master 
     \begin{lstlisting}
       dwt_setrxtimeout(0);
       dwt_setpreambledetecttimeout(0);
@@ -174,15 +175,16 @@
       ancenablerx();
     \end{lstlisting}    
     \textcolor{dgreen}{Attenzione:} dopo aver chiamato \lstinline!anch_tx_or_wait()! la \lstinline!rxResponseMaskAnch! potrebbe essere cambiata ed essere diventata
-    nulla, ossia tutti hanno risposto, in tal caso vengono disabilitati i timeout e l'istanza torna nuovamente in ricezione per attendere l'arrivo del messaggio di Final
+    nulla ad indicare che tutte le ancore hanno risposto. In tal caso vengono disabilitati i timeout e l'istanza torna nuovamente in ricezione per attendere l'arrivo del messaggio di Final.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!void handle_error_unknownframe(event_data_t dw_event)!}
+    Gestisce l'arrivo di un frame non identificato.\\
     Nel caso in cui il tag sia in modalità \lstinline!TAG_WAIT! gestisce l'arrivo di un messaggio con modalità di indirizzamento
     errata oppure il fatto che \lstinline!rxd->event! sia diverso da \lstinline!DWT_SIG_RX_OKAY! e da \lstinline!DWT_SIG_RX_TIMEOUT!
-    La chiamata a questa funzione comporta l'inserimento in coda di un evento di tipo \lstinline!TIMEOUT!)
+    La chiamata a questa funzione comporta l'inserimento in coda di un evento di tipo \lstinline!TIMEOUT!
     \begin{lstlisting}
       dwt_setrxtimeout(0);
       dwt_setpreambledetecttimeout(0);
@@ -194,7 +196,7 @@
 
 \begin{frame}[fragile,shrink=20]{File instance\_common.c}
   \begin{block}{\lstinline!void ancprepareresponse(uint16 sourceAddress, uint8 srcAddr_index, uint8 fcode_index, uint8 *frame, uint32 uTimeStamp)!}
-    E' stata rimossa la parte che gestiva la procedura di autoranging già implementata nel firmware della DecaWave. Vengono inoltre copiate nel messaggio
+    È stata rimossa la parte che gestiva la procedura di autoranging già implementata nel firmware della DecaWave. Vengono inoltre copiate nel messaggio
     di risposta che viene inviato al tag le medie dei range calcolate durante la procedura di autoranging
     \begin{lstlisting}
       for(i = anc_addr + 1, j = 0; i < MAX_ANCHOR_LIST_SIZE; i++, j++)
@@ -213,7 +215,7 @@
 
 \begin{frame}{File instance\_common.c}
   \begin{block}{\lstinline!void anc_prepare_response_autoranging(uint8 srcAddr_index, uint8 fcode_index, uint8 *frame)!}
-    Funzione utilizzata dalle ancore per prerare un messaggio di risposta durante la fase di autoranging.
+    Gestisce la preparazione del messaggio di risposta di un'ancora ad un Poll ricevuto da un'ancora master.
   \end{block}
 \end{frame}
 
@@ -265,7 +267,7 @@
       dwt_setrxtimeout(0);
       dwt_setpreambledetecttimeout(0);
     \end{lstlisting}
-    Nel caso in cui il messaggio sia ricevuto da un'ancora \alert{master} in modalità \lstinline!ANCHOR_RNG! e viene aggiornata la maschera
+    Nel caso in cui il messaggio sia ricevuto da un'ancora \alert{master} in modalità \lstinline!ANCHOR_RNG! viene aggiornata la maschera
     e decrementato il contatore
     \begin{lstlisting}
       instance_data[0].responseTO--;
@@ -275,15 +277,15 @@
     \begin{lstlisting}
       anc_rx_reenable();
     \end{lstlisting}
-    Nel caso in cui il messaggio sia ricevuto da un'ancora \alert{non} master in modalità \lstinline!ANCHOR_RNG! la cui maschera sia
-    diversa da $0$ (i.e. non sono state ricevute tutte le risposte dalle altre ancore) \lstinline!ANCHOR_RNG! viene aggiornata e l'invio del
+    Nel caso in cui il messaggio sia ricevuto da un'ancora, \alert{non} master in modalità \lstinline!ANCHOR_RNG!, la cui maschera sia
+    diversa da $0$ (i.e. non sono state ricevute tutte le risposte dalle altre ancore) \lstinline!rxResponseMaskAnc! viene aggiornata e l'invio del
     messaggio viene gestito
     \begin{lstlisting}
       instance_data[0].rxResponseMaskAnc &= ~(0x1 << (sourceAddress & 0x3));
       anc_tx_or_rxreenable_autoranging();
     \end{lstlisting}
     Il caso in cui la maschera fosse completamente nulla l'istanza potrebbe non aver ricevuto un messaggio di Poll oppure tutte le risposte sono state già
-    ricevute, in questo caso viene resettato il TimeOut e riabilitata immediatamente la ricezione
+    ricevute, in questo caso viene resettato il Timeout e riabilitata immediatamente la ricezione
     \begin{lstlisting}
       dwt_setrxtimeout(0);
       dwt_rxenable(DWT_START_RX_IMMEDIATE);
@@ -293,9 +295,8 @@
 
 \begin{frame}[fragile]{File instance\_common.c - funzione \lstinline!instance_rxcallback!}
   \begin{block}{condizione \lstinline!rxd->event == DWT_SIG_RX_TIMEOUT!}
-    Nel caso in cui un'ancora \alert{non} master in modalità \lstinline!ANCHOR_RNG! non abbia ricevuto la risposta attesa e il TimeOut sia scattato viene
-    aggiornata la \lstinline!rxResponseMaskAnc! e, nel caso sia arrivato il turno per l'istanza di inviare la risposta, risponde all'ancora master. Così
-    da preservare l'interazione tra l'istanza e l'ancora master e calcolare comunque il nuovo TOF
+    Nel caso in cui un'ancora \alert{non} master in modalità \lstinline!ANCHOR_RNG! non abbia ricevuto la risposta attesa e il Timeout sia scattato viene
+    aggiornata la \lstinline!rxResponseMaskAnc! e, nel caso sia arrivato il turno per l'istanza di inviare la risposta, risponde all'ancora master così da preservare il funzionamento della procedura di autoranging
     \begin{lstlisting}
       handle_rx_mask_on_timout();
       anc_tx_or_rxreenable_autoranging();
@@ -309,13 +310,13 @@
 
 \begin{frame}[fragile]{File instance\_common.c}
   \begin{block}{\lstinline!int instance_run()!}
-    Nel caso in cui l'uscita della macchina a stati sia \lstinline!INST_DONE_WAIT_FOR_NEXT_EVENT_TO! viene reimpostato il TimeOut per l'invio di un nuovo Poll
+    Nel caso in cui l'uscita della macchina a stati sia \lstinline!INST_DONE_WAIT_FOR_NEXT_EVENT_TO! viene reimpostato il Timeout per l'invio di un nuovo Poll
     da parte dell'ancora \alert{master}
     \begin{lstlisting}
       nextPeriod = instance_data[0].anchSleepTime_ms;
       instance_data[0].nextSleepPeriod = (uint32) nextPeriod;
     \end{lstlisting}
-    Nel caso \lstinline!TAG_WAIT! viene gestito il TimeOut che consente di iniziare la normale procedura di ranging quando
+    Nel caso \lstinline!TAG_WAIT! viene gestito il Timeout che consente di iniziare la normale procedura di ranging quando
     non viene più rilevata attività di autoranging
     \begin{lstlisting}
       enable_tag_polling(&instance_data[0]);
