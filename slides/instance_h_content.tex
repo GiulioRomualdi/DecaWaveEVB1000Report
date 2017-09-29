@@ -44,13 +44,13 @@
   \end{block}
   \begin{block}{\lstinline!#define AUTORANGING_RANGES 8!}
     Posizione, all'interno di \lstinline!instance_data[0].msg_f.messageData!, a partire dalla quale
-    l'ancora i-esima inserisce le medie dei range che le competono.\\
+    l'ancora inserisce le medie dei range che le competono.\\
     In questo caso messageData contiene un messaggio di tipo \lstinline!RTLS_DEMO_MSG_ANCH_RESP!.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{Header instance.h - Struct \lstinline!sfConfig_t!}
-  La seguenti \lstinline!struct! sono state modificate
+  Le seguenti \lstinline!struct! sono state modificate
   \begin{lstlisting}
     typedef struct
     {
@@ -60,9 +60,9 @@
       ...
     } sfConfig_t;
   \end{lstlisting}
-  È stato aggiunto il campo anchPollSleepDly e il campo PollSleepDly è stato rinominato
+  È stato aggiunto il campo \lstinline!anchPollSleepDly! e il campo \lstinline!PollSleepDly! è stato rinominato
   TagPollSleepDly per maggiore chiarezza.\\
-  Il campo anchPollSleepDly rappresenta il periodo in \SI{}{\milli\second} di trasmissione dei Poll
+  Il campo \lstinline!anchPollSleepDly! rappresenta il periodo in \SI{}{\milli\second} di trasmissione dei Poll
   dell'ancora master.
 
 \end{frame}
@@ -83,20 +83,6 @@
     Se il dispositivo si comporta come ancora in modalità \lstinline!ANCHOR_RNG! ed è l'ancora master
     rappresenta l'istante di tempo, secondo l'orologio interno, in cui è stato spedito l'ultimo Poll.\\
     Utilizzato per capire se sono passati \lstinline!anchSleepTime_ms! \SI{}{\milli\second} dall'invio dell'ultimo Poll.\\
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile]{Header instance.h - Struct \lstinline!instance_data_t!}
-  \begin{block}{}
-    Se invece il dispositivo si comporta come tag in modalità \lstinline!TAG_WAIT! rappresenta l'istante di tempo, secondo l'orologio
-    interno, in cui il tag ha ricevuto l'ultimo Poll inviato da un'ancora master.\\
-    Utilizzato per capire se sono passati \lstinline!AUTORANGING_MAX_TIMEOUT_TAG! \SI{}{\milli\second} dalla ricezione
-    dell'ultimo Poll inviato da un'ancora master.
-  \end{block}
-  \begin{block}{\lstinline!uint8 autoranging_timeout!}
-    Abilitazione del timer usato da un'ancora master per inviare periodicamente Poll alle altre ancore.\\
-    Abilitazione del timer usato da un tag in modalità \lstinline!TAG_WAIT! per attendere la fine della
-    procedura di autoranging.
   \end{block}
 \end{frame}
 
@@ -138,13 +124,13 @@
   \end{block}
   \begin{block}{\lstinline!float anchorPositionMatrix[3 * MAX_ANCHOR_LIST_SIZE]!}
     Posizioni cartesiane delle ancore ottenute con apposito algoritmo a partire dalle medie dei range salvate
-    in \lstinline!autoRngRangesArray!.
+    in \lstinline!autoRngRangesArray!.\\
     \alert{in generale:} \lstinline!anchorPositionMatrix[i][j]! contiene la coordinata $i$-esima dell'ancora $j$-esima.
   \end{block}
 \end{frame}
 
 \begin{frame}
-  \begin{block}{\lstinline!uint8 anchorPositionSentToViewer!}
+  \begin{block}{\lstinline!uint8 tagPositionsSentToViewer!}
     Contatore utilizzato per inviare ad intervalli regolari la posizione delle ancore sulla porta seriale
     virtuale (USB OTG VCP). Tali posizioni sono utilizzate dal Viewer 3D.
   \end{block}
