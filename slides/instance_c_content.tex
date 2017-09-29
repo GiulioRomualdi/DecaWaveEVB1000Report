@@ -1,0 +1,399 @@
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  La funzione
+  \begin{lstlisting}
+    int testapprun(instance_data_t *inst, int message)
+  \end{lstlisting}
+  contiene una macchina a stati che implementa la logica di funzionamento delle ancore e dei tag.
+  Essa è stata modificata al fine di rimuovere la vecchia modalità di autoranging ed inserire la nuova.\\
+  Nel seguito sono descritti i principali \alert{cambiamenti} apportati.
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_INIT!}
+    Un tag in modalità \lstinline!TAG_WAIT! abilita la ricezione di eventuali messaggi
+    provenienti dalle ancore che eseguono l'autoranging.\\
+    Il codice
+    \begin{lstlisting}
+      inst->autoranging_timeout = TRUE;
+      inst->autoranging_poll_time = portGetTickCount();
+    \end{lstlisting}
+    abilita il timeout software utilizzato per attendere la fine della procedura di autoranging e
+    memorizza l'istante di tempo corrente nel caso in cui la procedura di autoranging fosse terminata
+    prima dell'accensione del tag.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_INIT! - continuazione}
+    Di solito (vedi ??), infatti, \lstinline!autoranging_poll_time! viene assegnato
+    alla ricezione da parte del tag di un Poll inviato da un'ancora master.\\
+    Il codice
+    \begin{lstlisting}
+      inst->autoRngRangesRxMask = 0;
+    \end{lstlisting}
+    inizializza la maschera che indica da quali ancore il tag ha ricevuto i range medi.\\
+    \alert{Lo stato successivo} è \lstinline!TA_RXE_WAIT!.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_INIT! - continuazione}
+    Un'ancora in modalità \lstinline!ANCHOR_RNG! si comporta diversamente a seconda che sia l'ancora master o meno.\\
+    L'ancora A0 viene configurata come ancora master e preparata per eseguire il primo sleep prima dell'invio del primo Poll.
+    Il codice
+    \begin{lstlisting}
+      for(i=0; i<MAX_ANCHOR_LIST_SIZE; i++)
+          inst->anchRngArrayCounter[i] = 0;
+      
+      uint16 instance_address = inst->instanceAddress16 & 0x3;
+      inst->anchRngArrayCounter[instance_address] = 0xFFFF - 0x1;
+    \end{lstlisting}
+    si occupa di inizializzare il contatore delle misure raccolte per ogni range di interesse.
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_INIT! - continuazione}
+    Per ogni ancora master, sia l'$i$-esima, $i \ge 0$, la procedura di autoranging si considera terminata
+    quando l'elemento più piccolo dell'array \lstinline!anchRngArrayCounter! è maggiore o uguale a
+    \lstinline!NUM_AUTORNG_RGN!. Dal momento che l'elemento $i$-esimo dell'array, che si riferisce al range
+    $r_{ii}$, non viene mai aggiornato esso viene posto al massimo numero rappresentabile su $16$ bit.\\
+    \alert{Lo stato successivo} è \lstinline!TA_TXE_WAIT!.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_INIT! - continuazione}
+    Le altre ancore, con indirizzo diverso da A0, abilitano la ricezione
+    e rimangono in attesa di messaggi di Poll inviati dall'ancora master.\\
+    \alert{Lo stato successivo} è \lstinline!TA_RXE_WAIT!.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=10]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_SLEEP_DONE!}
+    In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
+    \lstinline!ANCHOR_RNG!, attendono che sia il momento di inviare un nuovo Poll.\\
+    Per le ancore è stato deciso di non utilizzare la modalità \lstinline!DEEP_SLEEP!
+    per cui, pur entrando nel ramo \lstinline!DEEP_SLEEP == 1!, viene replicata l'istruzione
+    \lstinline!Sleep(3)! prevista nel ramo \lstinline!#else!.
+    \begin{lstlisting}
+      #if (DEEP_SLEEP == 1)
+          if (inst->mode == TAG)
+          {
+            ...
+          }  
+          else if (inst->mode == ANCHOR_RNG)
+              Sleep(3);
+      #else
+          Sleep(3);
+      #endif
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=10]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TXE_WAIT!}
+    In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
+    \lstinline!ANCHOR_RNG!, eseguono alcune operazioni in preparazione alla spedizione
+    del successivo Poll.\\
+    In particolare con le istruzioni
+    \begin{lstlisting}
+      if (inst->mode == ANCHOR_RNG)
+          inst->rangeNumAnc++;
+      ...
+      else if (inst->mode == ANCHOR_RNG)
+          inst->rxResponseMaskAnc = 0;
+    \end{lstlisting}
+    l'ancora master, replicando il comportamento di un tag, incrementa il rangeNumber,
+    utilizzato nel protocollo di trasmissione per eseguire un integrity check, e riporta
+    a zero la maschera che indica quali ancore hanno risposto al Poll inviato.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=10]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TX_POLL_WAIT_SEND!}
+    In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
+    \lstinline!ANCHOR_RNG!, spediscono effettivamente il Poll.\\
+    In particolare con le istruzioni
+    \begin{lstlisting}
+      inst->responseTO = MAX_ANCHOR_LIST_SIZE - 1;
+      dwt_setrxtimeout((uint16)inst->fwtoTime_sy * (MAX_ANCHOR_LIST_SIZE - 1));
+    \end{lstlisting}
+    l'ancora master, replicando il comportamento di un tag, configura un timeout di ricezione
+    di durata proporzionale al numero di risposte attese \lstinline!MAX_ANCHOR_LIST_SIZE - 1!.
+    Tale numero è inferiore di uno rispetto al numero di risposte attese normalmente da un tag
+    dato che una delle ancore si comporta come master.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TX_FINAL_WAIT_SEND!}
+    In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
+    \lstinline!ANCHOR_RNG!, spediscono effettivamente il Final.\\
+    Dato che l'ancora master invia un byte in più per specificare se la \alert{propria} procedura di autoranging
+    è terminata è necessario modificare la lunghezza del messaggio con l'istruzione
+    \begin{lstlisting}
+      inst->psduLength = (ANCH_FINAL_MSG_LEN + FRAME_CRTL_AND_ADDRESS_S + FRAME_CRC);
+    \end{lstlisting}
+    dove \lstinline!ANCH_FINAL_MSG_LEN! vale $34$ invece che $33$ come nel caso del tag.\\
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TX_FINAL_WAIT_SEND! - continuazione}
+    Con le istruzioni
+    \begin{lstlisting}
+      inst->msg_f.messageData[END_AUTORANGING] = FALSE;
+      ...
+      if(inst->mode == ANCHOR_RNG && 
+      array_min(inst->anchRngArrayCounter, MAX_ANCHOR_LIST_SIZE) >= NUM_AUTORNG_RNG)
+      {
+        inst->anchorRngMaster++;
+        inst->msg_f.messageData[END_AUTORANGING] = TRUE;
+      }
+    \end{lstlisting}
+    viene modificato il flag che indica se la procedura di autoranging è terminata e viene
+    incrementata la variabile contenente l'ID dell'ancora master corrente.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=30]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TX_FINAL_WAIT_CONF!}
+    In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
+    \lstinline!ANCHOR_RNG!, verificano l'avvenuta spedizione del Poll e del Final.\\
+    Per quanto riguarda l'ancora master, nel caso in cui stia verificando l'avvenuta spedizione
+    di un Poll, si comporta come un tag.\\
+    Se invece l'ancora master sta verificando la spedizione di un Final e viene soddisfatto il criterio
+    di termine della procedura di autoranging allora si porta nello stato di ricezione
+    \lstinline!TA_RXE_WAIT! in cui attenderà la ricezione di nuovi Poll provenienti dalla nuova ancora master.
+    \begin{lstlisting}
+      if(inst->previousState == TA_TXFINAL_WAIT_SEND)
+      {
+        if(inst->mode == ANCHOR_RNG && 
+        array_min(inst->anchRngArrayCounter, MAX_ANCHOR_LIST_SIZE) >= NUM_AUTORNG_RNG)
+        {
+          ...
+          inst->testAppState = TA_RXE_WAIT;
+          ...
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=30]{File instance.c - \lstinline!testapprun!}
+  \begin{block}{Stato \lstinline!TA_TX_FINAL_WAIT_CONF! - continuazione}
+    Inoltre se, dopo aver incrementato il contatore \lstinline!anchorRngMaster!,
+    l'indirizzo della nuova ancora master è pari
+    al numero totale di ancore allora la procedura \alert{complessiva} di autoranging
+    è terminata ed è possibile ripristinare la modalità normale di funzionamento \lstinline!ANCHOR!
+    attraverso la chiamata alla funzione \lstinline!instance_backtoanchor()!.
+    \begin{lstlisting}
+          if((inst->anchorRngMaster & 0x7) == MAX_ANCHOR_LIST_SIZE))
+            instance_backtoanchor(inst);
+          ...
+          }
+    \end{lstlisting}
+    \alert{Solo l'ultima ancora} chiama la funzione \lstinline!instance_backtoanchor()!
+    in questa parte della macchina a stati. Le altre ancore rilevano il termine della procedura
+    di autoranging quando ricevono l'ultimo final inviato dall'ultima
+    ancora nello stato \lstinline!TA_RX_WAIT_DATA!.
+  \end{block}
+\end{frame}
+
+\begin{frame}{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  Lo stato \lstinline!TA_RX_WAIT_DATA!, assieme alla callback di ricezione \lstinline!instance_rxcallback()!
+  contenuta nel file \lstinline!instance_common.c!, si occupa di processare i messaggi ricevuti dal dispositivo,
+  ancora o tag, e ne modifica il comportamento di consenguenza.\\
+  Nel caso in cui il dispositivo abbia ricevuto un messaggio valido, lo stato \lstinline!TA_RX_WAIT_DATA!
+  prevede comportamenti diversi in base all'\lstinline!fcode! contenuto nel messaggio.\\
+  Di seguito sono descritti i principali \alert{cambiamenti} apportati a questo stato suddivisi
+  per \lstinline!fcode!.
+\end{frame}
+
+\begin{frame}[fragile, shrink=30]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  Il firmware originale gestiva gli fcode \lstinline!RTLS_DEMO_MSG_TAG_POLL! e
+  \lstinline!RTLS_DEMO_MSG_ANCH_POLL! assieme. Nella nuova release sono gestiti separatamente.
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_POLL!}
+    Le ancore che ricevono un Poll da parte di un'ancora master si comportano come le ancore
+    che ricevono un Poll da parte di un tag nella normale procedura di ranging.\\
+    Un tag nella modalità \lstinline!TAG_WAIT! reimposta il tempo di ricezione del Poll in modo
+    da garantire il funzionamento del sistema di timeout con cui il tag si rende conto del termine
+    della procedura di autoranging. In questa situazione il tag torna ad ascoltare nello stato
+    \lstinline!TA_RXE_WAIT!.
+    \begin{lstlisting}
+      ...
+      if (inst->mode == TAG_WAIT)
+      {
+        inst->autoranging_poll_time = portGetTickCount();
+        inst->testAppState = TA_RXE_WAIT;
+
+        break;
+      }
+      ...
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  Il firmware originale gestiva gli fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP! e \lstinline!_RESP2!
+  assieme. Nella nuova release sono gestiti separatamente.
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP!}
+    Il tag che riceve una risposta da parte di un'ancora si occupa anche di gestire i range medi
+    elaborati durante la fase di autoranging e che ogni ancora si occupa di inviare al tag in risposta
+    ad un Poll (oltre al Tof come previsto nel funzionamento normale della procedura di ranging).\\
+    In particolare se il tag non ha ancora ricevuto i range medi dall'ancora avente indirizzo
+    \lstinline!srcAddr[0]!
+    \begin{lstlisting}
+      if ((inst->mode == TAG) && (inst->autoRngRangesRxMask & (0x1 << (srcAddr[0]&0x3))) == 0)
+      {
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP! - continuazione}
+    valuta il numero di range che si aspetta di ricevere da tale ancora
+    \begin{lstlisting}
+        uint8 number_of_ranges = MAX_ANCHOR_LIST_SIZE - 1 - (srcAddr[0]&0x3);
+    \end{lstlisting}
+    e copia i dati dal messaggio appena ricevuto nella struttura dati \lstinline!autoRngRangesArray!
+    a partire dal byte \lstinline!offset!-esimo.
+    \begin{lstlisting}
+        uint8 offset = 0;
+        for(i = 0; i < (srcAddr[0]&0x3); i++)
+          offset += (MAX_ANCHOR_LIST_SIZE - 1 - i);
+
+        memcpy(&(inst->autoRngRangesArray[offset]), &(messageData[AUTORANGING_RANGES]),
+        sizeof(double) * number_of_ranges);
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=15]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP! - continuazione}
+    Inoltre aggiorna la maschera \lstinline!autoRngRangesRxMask! in modo da non ripetere
+    la procedura di salvataggio dei range medi alla ricezione di altre risposte dalla medesima ancora.
+    \begin{lstlisting}
+        inst->autoRngRangesRxMask |= (0x1 << (srcAddr[0]&0x3));
+    \end{lstlisting}
+    Se il tag ha ricevuto tutti i range medi da tutte le ancora valuta le posizioni cartesiane
+    delle ancore attraverso la chiamata alla funzione \lstinline!rangeToPos! che salva il risultato
+    nella matrice \lstinline!anchorPositionMatrix!.
+    \begin{lstlisting}
+        if (inst->autoRngRangesRxMask  == (0x1 << MAX_ANCHOR_LIST_SIZE) - 1)
+        {
+          rangesToPos(inst->autoRngRangesArray,\
+          inst->anchorPositionMatrix);
+        }
+      }
+      ...
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=15]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  Il firmware originale gestiva gli fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP! e
+  \lstinline!RTLS_DEMO_MSG_ANCH_RESP2! assieme. Nella nuova release sono gestiti separatamente.
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_RESP2!}
+    Un tag in \lstinline!TAG_WAIT! ignora il messaggio e riabilita la ricezione.\\
+    Le ancore, master o meno, si comportano come in una normale procedura di ranging
+    eccetto per il fatto che l'ancora master salva il tof ricevuto in un accumulatore
+    \lstinline!anchRngArray! e incrementa il contatore \lstinline!anchRngArrayCounter!.
+    \begin{lstlisting}
+      ...
+      if (inst->anchRngArrayCounter[src_addr] == 0)
+        inst->anchRngArray[src_addr] = range;
+      else 
+        inst->anchRngArray[src_addr] += range;
+      inst->anchRngArrayCounter[src_addr]++;
+      ...
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_TAG_FINAL! e \lstinline!RTLS_DEMO_MSG_ANCH_FINAL!}
+    Un tag in \lstinline!TAG_WAIT! e riabilita la ricezione.\\
+    Un'ancora non master che riceve un \lstinline!ANCH_FINAL! calcola il tof, come
+    farebbe nel caso in cui ha ricevuto un \lstinline!TAG_FINAL!, lo salva in un accumulatore
+    \lstinline!anchRngArray! ed incrementa il contatore \lstinline!anchRngArrayCounter!
+    \begin{lstlisting}
+      if (inst->anchRngArrayCounter[src_addr] == 0)
+        inst->anchRngArray[src_addr] = range;
+      else 
+        inst->anchRngArray[src_addr] += range;
+      inst->anchRngArrayCounter[src_addr]++;
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_FINAL! - continuazione}
+    Inoltre l'ancora verifica se il messaggio di Final ricevuto contiene
+    il byte che indica la fine della procedura di autoranging da parte dell'ancora
+    master corrente. Nel caso in cui la procedura sia terminata viene incrementato
+    l'indirizzo dell'ancora master corrente. Inoltre \alert{viene invalidato} il tof
+    dal momento che non potrebbe essere utilizzato nella risposta ad un Poll proveniente
+    dalla successiva ancora master dato che è riferito all'ancora master precedente.
+    \begin{lstlisting}
+      if(messageData[END_AUTORANGING] == TRUE)
+      {
+        inst->anchorRngMaster++;
+        inst->autoranging_timeout = FALSE;
+        inst->tofAnc = INVALID_TOF;
+      }
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile, shrink=30]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_FINAL! - continuazione}
+    Qualora l'ancora che ha ricevuto il final fosse la nuova ancora master
+    si prepara per spedire il suo primo Poll (le inizializzazioni sono le medesime
+    eseguite dall'ancora 0 nello stato \lstinline!TA_INIT!).
+    \begin{lstlisting}
+      if(inst->mode == ANCHOR_RNG && inst->instanceAddress16 == inst->anchorRngMaster)
+      {
+        ...
+        inst->autoranging_timeout = FALSE;
+        inst->nextState = TA_TXPOLL_WAIT_SEND;
+        inst->testAppState = TA_TXE_WAIT;
+        
+        inst->rangeNumAnc = 0;
+
+        for(i=0; i<MAX_ANCHOR_LIST_SIZE; i++)
+            inst->anchRngArrayCounter[i] = 0;
+
+        uint16 instance_address = inst->instanceAddress16 & 0x3;
+        inst->anchRngArrayCounter[instance_address] = 0xFFFF - 0x1;
+        ...
+      }
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!testapprun! - \lstinline!TA_RX_WAIT_DATA!}
+  \begin{block}{fcode \lstinline!RTLS_DEMO_MSG_ANCH_FINAL! - continuazione}
+    Se al contrario l'ancora rileva che l'intera procedura di autoranging è completata,
+    poichè l'indirizzo della nuova ancora master è pari al numero totale di ancore, calcola le medie
+    dei range attraverso la funzione \lstinline!eval_means()! e ripristina la modalità normale di funzionamento
+    \lstinline!ANCHOR! attraverso la funzione \lstinline!instance_backtoanchor()!.
+    \begin{lstlisting}
+      ...
+      else if((inst->mode == ANCHOR_RNG) && (inst->anchorRngMaster & 0x7) == MAX_ANCHOR_LIST_SIZE)
+      {
+        eval_means(inst);
+        instance_backtoanchor(inst);
+      }
+      ...
+    \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{File instance.c - \lstinline!array_min!}
+  La seguente funzione è stata aggiunta
+  \begin{block}{\lstinline!uint16 array_min (uint16* array, int len)!}
+    Calcola il minimo di un array.
+  \end{block}
+\end{frame}
