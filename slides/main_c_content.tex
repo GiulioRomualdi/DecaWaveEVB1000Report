@@ -1,10 +1,10 @@
 \begin{frame}[fragile, shrink=15]{File main.c}
-  Nel seguito sono riportate alcune note riguardanti il file \lstinline!main.c!
+  Nel seguito sono riportate alcune note riguardanti il file \lstinline[language=C]!main.c!
   \begin{block}{Configurazione Slot and Superframe}
     In generale è stato aggiunto il campo relativo al periodo di trasmissione dei Poll
     da parte di un'ancora master. È stato verificato sperimentalmente che un periodo di \SI{10}{\milli\second} è
     sufficiente a gestire 4 ancore di cui una master.\\
-    \begin{lstlisting}
+    \begin{C}
       sfConfig_t sfConfig[4] =
       {
       ...
@@ -19,21 +19,21 @@
       },
       ...
     };
-  \end{lstlisting}
+  \end{C}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile, shrink=15]{File main.c}
-  \begin{block}{\lstinline!uint32 inittestapplication(uint8 s1switch)!}
+  \begin{block}{\lstinline[language=C]!uint32 inittestapplication(uint8 s1switch)!}
     La modalità di funzionamento di un dispositivo DecaWaveEVB1000 dipende
     dallo switch $n.4$ presente sul PCB.\\
     Un dispositivo di tipo tag, nella nuova release, non viene più inizializzato in modalità
-    \lstinline!TAG! ma \lstinline!TAG_WAIT!. In tale modalità attende il termine della procedura
+    \lstinline[language=C]!TAG! ma \lstinline[language=C]!TAG_WAIT!. In tale modalità attende il termine della procedura
     di autoranging.\\
     Un dispositivo di tipo ancora, nella nuova release, non viene più inizializzato in modalità
-    \lstinline!ANCHOR! ma \lstinline!ANCHOR_RNG!. In tale modalità le ancore eseguono la procedura
+    \lstinline[language=C]!ANCHOR! ma \lstinline[language=C]!ANCHOR_RNG!. In tale modalità le ancore eseguono la procedura
     di autoranging.
-    \begin{lstlisting}
+    \begin{C}
     if((s1switch & SWS1_ANC_MODE) == 0)
     {
       instance_mode = TAG_WAIT;
@@ -42,18 +42,18 @@
     {
       instance_mode = ANCHOR_RNG;
     }
-    \end{lstlisting}
+    \end{C}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile, shrink=15]{File main.c}
-  \begin{block}{\lstinline!void setLCDline1(uint8 s1switch)!}
+  \begin{block}{\lstinline[language=C]!void setLCDline1(uint8 s1switch)!}
     Questa funzione gestisce il testo riportato sul display LCD a seconda
     della modalità del dispositivo DecaWaveEVB1000.\\
     Nella nuova release del firmware i tag all'accensione riportano la scritta
     ``Waiting...'' ad indicare che attende il termine della procedura di autoranging.
     Le ancore invece riportano la scritta ``Autoranging''.
-    \begin{lstlisting}
+    \begin{C}
       ...
       else if(role == TAG_WAIT)
       {
@@ -67,15 +67,15 @@
         writetoLCD( 16, 1, dataseq1);
       }
       ...
-    \end{lstlisting}
+    \end{C}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile, shrink=30]{File main.c}
-  \begin{block}{\lstinline!int main(void)!}
+  \begin{block}{\lstinline[language=C]!int main(void)!}
     Rispetto alla release precedente, il tag, dopo aver ricevuto i tof da tutte le ancore,
     invia il risulutato della trilaterazione attraverso la porta seriale (USB OTG VCP)
-    \begin{lstlisting}
+    \begin{C}
     ...  
     if(rx == TOF_REPORT_T2A)
     {
@@ -92,15 +92,15 @@
 	                    *(uint32_t*)&pos_x,
                             *(uint32_t*)&pos_y,
                             *(uint32_t*)&pos_z);
-    \end{lstlisting}
+    \end{C}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile, shrink=30]{File main.c}
-  \begin{block}{\lstinline!int main(void)! - continuazione}
-    Inoltre ogni \lstinline!SEND_ANCHOR_POSITION_EVERY_CYCLES! cicli invia sulla medesima
+  \begin{block}{\lstinline[language=C]!int main(void)! - continuazione}
+    Inoltre ogni \lstinline[language=C]!SEND_ANCHOR_POSITION_EVERY_CYCLES! cicli invia sulla medesima
     porta la posizione cartesiana delle ancore.
-    \begin{lstlisting}
+    \begin{C}
 	  if(instance_data[0].tagPositionSentToViewer == SEND_ANCHOR_POSITION_EVERY_CYCLES)
 	  {
 	    instance_data[0].tagPositionSentToViewer = 0;
@@ -114,6 +114,6 @@
 	  }
           ...
         }
-        \end{lstlisting}
+        \end{C}
   \end{block}
 \end{frame}
