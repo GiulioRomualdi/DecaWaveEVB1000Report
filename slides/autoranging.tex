@@ -1,4 +1,22 @@
-\section{Descrizione procedura di Autoranging presente nel Firmware}
+\section{Descrizione procedura di ranging tra le ancore presente nel firmware originale}
+\begin{frame}[shrink=10]{Introduzione}
+  Nel seguito viene descritta, mediante un sequence diagram, la procedura di ranging tra le ancore
+  presente nel firmware originale. Nel diagramma verrà utilizzata una terminologia similare a quella utilizzata nelle slide precedenti.\\
+  Nella lettura del diagramma si tenga conto delle seguenti
+  \begin{itemize}
+  \item[-] i blocchi di colore bianco rappresentano stati della macchina a stati;
+  \item[-] i blocchi di colore verde rappresentano le callback di ricezione;
+  \item[-] nello schema presentato \alert{solo} le ancore A0 ed A1 inviano il Poll alle altre ancore
+    non perchè lo schema sia semplificato. Infatti il firmware originale prevede
+    il calcolo di un numero di range tra le ancore limitato a $3$ (ossia $r01$, $r02$ ed $r12$);
+  \item[-] si ricordi che la procedura di ranging tra le ancore originale viene eseguita negli ultimi
+    due slot di ogni superframe;
+  \item[-] \lstinline!TofArrayAnc! è la struttura dati in cui le ancore salavano i tof ricevuti;
+  \item[-] \lstinline!A1 Slot Time! è un campo utilizzato dall'ancora A1 per decidere quando è il momento
+    di inviare il Poll.
+  \end{itemize}
+  
+\end{frame}
 
 \begin{frame}{Modalità di Autoranging inclusa nel Firmware}  
   \begin{center}
@@ -13,15 +31,15 @@
 \end{frame}
 
 \begin{frame}{Considerazioni}
-  La procedura di autoranging presente nel firmware:
+  La procedura presentata presenta le seguenti limitazioni:
   \begin{itemize}
   \item [-] calcola solo 3 su 6 dei range richiesti per valutare la posizione delle ancore;
-  \item [-] non spedisce i range calcolati / la loro media al tag;
+  \item [-] non spedisce i range calcolati / la loro media ai tag;
   \item [-] è implementata mediante parti di codice specifiche per ogni ancora quindi \alert{non}
-    facilmente estensibile al caso di più ancore;
-  \item [-] a parita di scelta del superframe period e dello slot period \alert{riduce} di $N$ il numero
-    massimo di tag utilizzabili poiché la procedura avviene negli ultimi $N$\footnote{nel caso del
-      firmware $N = 2$} slot.
+    facilmente estensibile al caso di più ancore.
+  %\item [-] a parita di scelta del superframe period e dello slot period \alert{riduce} di $N$ il numero
+  %  massimo di tag utilizzabili poiché la procedura avviene negli ultimi $N$\footnote{nel caso del
+  %    firmware $N = 2$} slot.
   \end{itemize}
 \end{frame}
 
