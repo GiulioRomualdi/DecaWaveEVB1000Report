@@ -1,14 +1,35 @@
-\section{Descrizione della procedura di Ranging}
+\section{Funzionamento di base del sistema DecaWave EVB1000}
+\begin{frame}{Introduzione}
+  Il sistema di tag ed ancore DecaWave EVB1000 consente di localizzare
+  un agente attraverso ricetrasmettitori che implementano la tecnica di trasmissione
+  \alert{UWB} (Ultra-wideband).\\
+  Alla base del funzionamento del sistema vi è lo scambio di messaggi, tra tag e ancore,
+  contententi principalmente informazioni di natura temporale. Tali informazioni consentono
+  alle ancore di calcolare il tempo di volo tra esse e il tag e quindi, mediante opportuno
+  algoritmo di trialaterazione, di calcolare la posizione del tag.
+\end{frame}
+
 \begin{frame}{Two-way Ranging}
-  Durante l'interazione fondamentale vengono scambiati, tra tag ed ancora,
+  Lo scambio di messaggi avviene secondo il metodo detto \alert{Two-way Ranging}.\\
+  Nel dettaglio vengono scambiati, tra tag e ciascuna ancora,
   un messaggio di Poll, uno di Risposta ed uno di Final.\\
-  I messaggi di \alert{Poll} e \alert{Final} vengono inviati dal tag a tutte
-  le ancore. \\
-  Il messaggio di \alert{Risposta} viene inviato dall'ancora
-  al tag ed a tutte le altre ancore.
+  I messaggi di \alert{Poll} e \alert{Final} vengono inviati dal tag
+  mentre ogni ancora invia il messaggio di \alert{Risposta}.
   \begin{center}
     \includegraphics[height=10em]{ranging.png}
   \end{center}
+\end{frame}
+
+\begin{frame}{Struttura di un messaggio ed RMARKER}
+  La struttura dei messaggi scambiati da tag e ancore è la seguente.
+  \begin{center}
+    \includegraphics[width=\linewidth]{whole_msg_decawave}
+  \end{center}
+  Il campo \alert{Data} contiene i dati veri e propri scambiati tra i dispositivi.\\
+  Durante la trasmissione di un messaggio l'inizio della parte PHR (PHY header)
+  costituisce l'evento da utilizzare per il time-stamping come da standard
+  IEEE 802.15.4 UWB PHY. Il tempo, espresso nell'orologio locale del dispositvo, di invio
+  del primo simbolo del PHR sarà definito nel seguito \alert{RMARKER}.
 \end{frame}
 
 \begin{frame}{Two-way Ranging}
@@ -52,35 +73,68 @@
   \]
 \end{frame}
 
-\begin{frame}{Delayed transmission}
+\begin{frame}[label={delayed_tx}]{Delayed transmission}
   \begin{alertblock}{Attenzione}
     La necessità di spedire nel messaggio di Final il tempo di spedizione del medesimo richiede
     l'utilizzo della funzione di \emph{delayed transmission} del DW1000.
   \end{alertblock}
   Il tempo di spedizione viene scelto a priori come
   \[
-  Rm_{fs} = Rm_{ps} + \Delta
+  Rm_{fs} = Rm_{ps} + T_{fd}
   \]
-  dove $\Delta$ è maggiore del tempo impiegato da tutte le ancore per rispondere al tag (attenzione ad aumento di ancore).
-  La funzione \emph{delayed transmission} garantisce che l'RMARKER di spedizione del Final coincida con
+  dove $T_{fd}$ è maggiore del tempo impiegato da \alert{tutte le ancore} per rispondere al tag ed è indicato
+  con Final Delay.
+  La funzione di \emph{delayed transmission} garantisce che l'RMARKER di spedizione del Final coincida con
   $Rm_{fs}$
 \end{frame}
 
-\begin{frame}{Frame \& Superframe}
-  Il sistema supporta \alert{nativamente} fino 8 tag e 3/4 ancore
+\begin{frame}{Superframe e frame}
+  Durante la trasmissione dei dati i tag e le ancore osservano un protocollo di trasmissione
+  \alert{a divisione di tempo} per evitare che un dispositivo possa interferire con la trasmissione
+  di un altro.\\
+  Nel dettaglio il tempo è diviso in una serie di \alert{superframe} a loro volta divisi in
+  frame.\\
+  Il firmware originale prevede 10 frame della durata di \SI{10}{\milli\second}, otto dei quali
+  sono dedicati ad altrettante istanze di ranging, una per ciasciun tag. I restanti due sono dedicati
+  alla ``vecchia'' procedura di ranging tra le ancore. In totale ciascun superframe ha un darata di \SI{100}{\milli\second}.\\
+  La configurazione del firmware originale prevede quindi fino a $8$ tag e $3$/$4$ ancore.
+\end{frame}
+
+\begin{frame}{Esempio di temporizzazione}
+  Un esempo di temporizzazione è mostrato di seguito.
   \centering
   \includegraphics[width=\linewidth]{frame_superframe_a2a.png}
 \end{frame}
 
-\begin{frame}{Gestione di più tag}
-  Ogni tag invia un messaggio di Poll ogni \alert{activation time} $a_t$
+\begin{frame}[shrink=10, label={anchors_responses_turn}]{Gestione delle risposte delle ancore}
+  Come visibile dallo schema riportato nella slide precedente le ancore rispondono una dopo l'altra a partire
+  dall'ancora A0.\\
+  Per far si che tale ordine sia rispettato ogni ancora, dopo aver ricevuto il messaggio di Poll, sta in ascolto
+  delle risposte di tutte le altre ancore. Nel caso ideale in cui tutte le ancore rispondo, l'ancora i-esima
+  invia la sua riposta quando la seguente condizione viene verificata
   \[
-  a_t = T_{sf} + T_{sr} + T_{sc}
+  N + I = M
+  \]
+  dove $N$ rappresenta il numero di risposte che l'ancora i-esima si aspetta ancora di ricevere,
+  $I$ è l'ID dell'ancora (nel caso di $4$ ancore l'ID è un intero compreso tra $0$ e $3$) ed $M$
+  è il numero totale di risposte che l'ancora attende.\\
+  Nel caso in cui una delle risposte non arrivi il sistema prevede un meccanismo di timeout che consente
+  all'ancora i-esima di inviare comunque la risposta nel momento giusto.
+\end{frame}
+
+\begin{frame}{Gestione di più tag}
+  Al fine di rendere effettivo il protocollo di trasmissione a divisione di tempi
+  l'ancora A0 ricopre un ruolo di arbitraggio. In particolare corregge i tempi di attivazione
+  di ogni tag come spiegato di seguito.\\
+  Ogni tag invia un messaggio di Poll ogni \alert{activation period} $a_p$
+  \[
+  a_p = T_{sp} + T_{sr} + T_{sc}
   \]
   \begin{itemize}
-  \item[-] $T_{sf}$: durata del Superframe 
+  \item[-] $T_{sp}$: periodo ideale di attivazione (detto Sleep Poll) $ = T_{sf}$ : durata del Superframe 
   \item[-] $T_{sr}$: alla prima iterazione vale $\SI{10}{\milli\second}$ successivamente vale  $\SI{0}{\milli\second}$
-  \item[-] $T_{sc}$: correzione calcolata dall'\alert{Ancora 0} ed inviata al \alert{tag i-esimo} 
+    (detto Sleep Random)
+  \item[-] $T_{sc}$: correzione calcolata dall'\alert{Ancora 0} ed inviata al \alert{tag i-esimo} (detto Sleep Correction)
   \end{itemize}
 \end{frame}
 
@@ -100,6 +154,7 @@
 \end{frame}
 
 \begin{frame}{Calcolo Calcolo del tempo di attivazione $T_{sc} = e$}
+  Nel seguente esempio si considera il caso $e < -\frac{T_{sf}}{2}$.\\
   Il tempo di riattivazione del tag $t_{i+1}^{t}$ è:
   \[
   t_{i+1}^{t} = t_{i}^{t} + T_{sf} + T_{sc} = t_i^a - (\cancel{e} + Tof) + T_{sf} + \cancel{e} = t_i^a - Tof + T_{sf} 
@@ -110,6 +165,7 @@
 \end{frame}
 
 \begin{frame}{Calcolo del tempo di attivazione $T_{sc} = e + T_{sf}$}
+  Nel seguente esempio si considera il caso $-\frac{T_{sf}}{2}$ \le e < 0$.\\
   Il tempo di riattivazione del tag $t_{i+1}^{t}$ è:
   \[
   t_{i+1}^{t} = t_{i}^{t} + T_{sf} + T_{sc} = t_i^a - (\cancel{e} + Tof) + T_{sf} + (\cancel{e} + T_{sf}) = t_i^a - Tof + 2T_{sf} 
@@ -119,72 +175,19 @@
   \end{center}
 \end{frame}
 
-\begin{frame}{Aumento della frequenza di ranging}
+\begin{frame}{Contributo di Pinna, Malagoli e Giannini}
+  Dopo aver chiarito la struttura di frame e superframe è possibile comprendere
+  il contributo degli studenti Pinna, Malagoli e Giannini.\\
+  Al fine di aumentare la frequenza di ranging è stata ridotta la durata del superframe
+  a quella di un solo frame.
   \begin{center}
     \includegraphics[width=\linewidth]{pmg_frames_removal.png}
   \end{center}
-      
+  In questa configurazione
   \begin{itemize}
-  \item[-] contributo di Pinna, Malagoli, Giannini;
-  \item[-] utilizzabile con un solo tag;
-  \item[-] $T_{sf} = T_s = \SI{10}{\milli\second}$;
-  \item[-] frequenza $ f = \SI{100}{\hertz}$.
+  \item[-] il sistema è utilizzabile con un solo tag;
+  \item[-] il tempo di superframe è $T_{sf} = T_s = \SI{10}{\milli\second}$;
+  \item[-] la frequenza è $ f = \SI{100}{\hertz}$.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Struttura generale di un messaggio}
-  I messaggi inviati sia dal tag che dalle ancore hanno la seguente struttura
-  \begin{center}
-    \includegraphics[height=3.4em]{message_f.pdf}
-  \end{center}
-  \begin{itemize}
-  \item[-] \lstinline!ctrl_frame!: maschera nella quale, tra le varie cose, viene decisa la modalità di
-    indirizzamento
-  \item[-] \lstinline!seq_num!: sequence number
-  \item[-] \lstinline!pan_id!: ID della rete
-  \item[-] \lstinline!dest_addr!: indirizzo del destinatario
-  \item[-] \lstinline!src_addr!: indirizzo del mittente
-  \item[-] \lstinline!msg_data!: payload (dipende dal tipo di messaggio)
-  \item[-] \lstinline!crc!: cyclic redundandcy check
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Messaggio di Poll - \lstinline!RTLS_DEMO_MSG_TAG_POLL!}
-  \begin{center}
-    \includegraphics[height=3.4em]{message_f_tag_poll.pdf}
-  \end{center}
-  \begin{itemize}
-  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_TAG_POLL!
-  \item[-] \lstinline!rangeNum!: range number della trasmissione
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Messaggio di Final - \lstinline!RTLS_DEMO_MSG_TAG_FINAL!}
-  \begin{center}
-    \includegraphics[height=3.4em]{message_f_tag_final.pdf}
-  \end{center}
-  \begin{itemize}
-  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_TAG_FINAL!
-  \item[-] \lstinline!rangeNum!: range number della trasmissione
-  \item[-] \lstinline!PTXT!: tempo di invio del Poll
-  \item[-] \lstinline!RRXT0!: tempo di ricezione della risposta da ancora 0
-  \item[-] \lstinline!RRXT1!: tempo di ricezione della risposta da ancora 1
-  \item[-] \lstinline!RRXT2!: tempo di ricezione della risposta da ancora 2
-  \item[-] \lstinline!RRXT3!: tempo di ricezione della risposta da ancora 3
-  \item[-] \lstinline!FTXT!: tempo di invio del Final
-  \item[-] \lstinline!VRESP!: maschera della risposte valide ricevute
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Messaggio di Risposta - \lstinline!RTLS_DEMO_MSG_ANCH_RESP!}
-  \begin{center}
-    \includegraphics[height=3.4em]{message_f_anch_resp.pdf}
-  \end{center}
-  \begin{itemize}
-  \item[-] \lstinline!FCODE = RTLS_DEMO_MSG_ANCH_RESP!
-  \item[-] \lstinline!RES_TAG_SLP0!: parte alta dello sleep correction calcolato dall'ancora 0
-  \item[-] \lstinline!RES_TAG_SLP1!: parte bassa dello sleep correction calcolato dall'ancora 0
-  \item[-] \lstinline!PREVIOUS_TOF!: tof calcolato al passo precedente dall'ancora
-  \item[-] \lstinline!rangeNum!: range number della trasmissione
-  \end{itemize}
-\end{frame}
