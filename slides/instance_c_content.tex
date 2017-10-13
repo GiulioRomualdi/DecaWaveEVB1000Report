@@ -1,3 +1,4 @@
+\section{instance.c}
 \begin{frame}[fragile]{File instance.c - \lstinline[language=C]!testapprun!}
   La funzione
   \begin{C}
@@ -25,7 +26,7 @@
 
 \begin{frame}[fragile]{File instance.c - \lstinline[language=C]!testapprun!}
   \begin{block}{Stato \lstinline[language=C]!TA_INIT! - continuazione}
-    Di solito (vedi ??), infatti, \lstinline[language=C]!autoranging_poll_time! viene assegnato
+    Di solito, infatti, \lstinline[language=C]!autoranging_poll_time! viene assegnato
     alla ricezione da parte del tag di un Poll inviato da un'ancora master.\\
     Il codice
     \begin{C}
@@ -55,7 +56,7 @@
 
 \begin{frame}[fragile]{File instance.c - \lstinline[language=C]!testapprun!}
   \begin{block}{Stato \lstinline[language=C]!TA_INIT! - continuazione}
-    Per ogni ancora master, sia l'$i$-esima, $i \ge 0$, la procedura di autoranging si considera terminata
+    Per ogni ancora master, sia l'$i$-esima, $i \ge 0$, il ruolo di ancora master si considera terminato
     quando l'elemento più piccolo dell'array \lstinline[language=C]!anchRngArrayCounter! è maggiore o uguale a
     \lstinline[language=C]!NUM_AUTORNG_RGN!. Dal momento che l'elemento $i$-esimo dell'array, che si riferisce al range
     $r_{ii}$, non viene mai aggiornato esso viene posto al massimo numero rappresentabile su $16$ bit.\\
@@ -132,12 +133,12 @@
   \begin{block}{Stato \lstinline[language=C]!TA_TX_FINAL_WAIT_SEND!}
     In questo stato i tag, nel loro funzionamento normale, e le ancore master, in modalità
     \lstinline[language=C]!ANCHOR_RNG!, spediscono effettivamente il Final.\\
-    Dato che l'ancora master invia un byte in più per specificare se la \alert{propria} procedura di autoranging
-    è terminata è necessario modificare la lunghezza del messaggio con l'istruzione
+    Dato che l'ancora master invia un byte in più per specificare se il \alert{proprio} ruolo di ancora master
+    è terminato è necessario modificare la lunghezza del messaggio con l'istruzione
     \begin{C}
       inst->psduLength = (ANCH_FINAL_MSG_LEN + FRAME_CRTL_AND_ADDRESS_S + FRAME_CRC);
     \end{C}
-    dove \lstinline[language=C]!ANCH_FINAL_MSG_LEN! vale $34$ invece che $33$ come nel caso del tag.\\
+    dove \lstinline[language=C]!ANCH_FINAL_MSG_LEN! vale $34$ invece che $33$ come nel caso del tag.
   \end{block}
 \end{frame}
 
@@ -154,7 +155,7 @@
         inst->msg_f.messageData[END_AUTORANGING] = TRUE;
       }
     \end{C}
-    viene modificato il flag che indica se la procedura di autoranging è terminata e viene
+    viene modificato il flag che indica se il ruolo di ancora master è terminato e viene
     incrementata la variabile contenente l'ID dell'ancora master corrente.
   \end{block}
 \end{frame}
@@ -166,7 +167,7 @@
     Per quanto riguarda l'ancora master, nel caso in cui stia verificando l'avvenuta spedizione
     di un Poll, si comporta come un tag.\\
     Se invece l'ancora master sta verificando la spedizione di un Final e viene soddisfatto il criterio
-    di termine della procedura di autoranging allora si porta nello stato di ricezione
+    di termine del proprio ruolo di ancora master allora si porta nello stato di ricezione
     \lstinline[language=C]!TA_RXE_WAIT! in cui attenderà la ricezione di nuovi Poll provenienti dalla nuova ancora master.
     \begin{C}
       if(inst->previousState == TA_TXFINAL_WAIT_SEND)
@@ -206,9 +207,9 @@
   contenuta nel file \lstinline[language=C]!instance_common.c!, si occupa di processare i messaggi ricevuti dal dispositivo,
   ancora o tag, e ne modifica il comportamento di consenguenza.\\
   Nel caso in cui il dispositivo abbia ricevuto un messaggio valido, lo stato \lstinline[language=C]!TA_RX_WAIT_DATA!
-  prevede comportamenti diversi in base all'\lstinline[language=C]!fcode! contenuto nel messaggio.\\
+  prevede comportamenti diversi in base all'\lstinline[language=C]!FCODE! contenuto nel messaggio.\\
   Di seguito sono descritti i principali \alert{cambiamenti} apportati a questo stato suddivisi
-  per \lstinline[language=C]!fcode!.
+  per \lstinline[language=C]!FCODE!.
 \end{frame}
 
 \begin{frame}[fragile, shrink=30]{File instance.c - \lstinline[language=C]!testapprun! - \lstinline[language=C]!TA_RX_WAIT_DATA!}
@@ -293,10 +294,8 @@
 \end{frame}
 
 \begin{frame}[fragile, shrink=15]{File instance.c - \lstinline[language=C]!testapprun! - \lstinline[language=C]!TA_RX_WAIT_DATA!}
-  Il firmware originale gestiva gli fcode \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_RESP! e
-  \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_RESP2! assieme. Nella nuova release sono gestiti separatamente.
   \begin{block}{fcode \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_RESP2!}
-    Un tag in \lstinline[language=C]!TAG_WAIT! ignora il messaggio e riabilita la ricezione.\\
+    Un tag in \lstinline[language=C]!TAG_WAIT! ignora il messaggio riabilita la ricezione.\\
     Le ancore, master o meno, si comportano come in una normale procedura di ranging
     eccetto per il fatto che l'ancora master salva il tof ricevuto in un accumulatore
     \lstinline[language=C]!anchRngArray! e incrementa il contatore \lstinline[language=C]!anchRngArrayCounter!.
@@ -331,7 +330,7 @@
 \begin{frame}[fragile]{File instance.c - \lstinline[language=C]!testapprun! - \lstinline[language=C]!TA_RX_WAIT_DATA!}
   \begin{block}{fcode \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_FINAL! - continuazione}
     Inoltre l'ancora verifica se il messaggio di Final ricevuto contiene
-    il byte che indica la fine della procedura di autoranging da parte dell'ancora
+    il byte che indica la fine del ruolo di ancora master per l'ancora
     master corrente. Nel caso in cui la procedura sia terminata viene incrementato
     l'indirizzo dell'ancora master corrente. Inoltre \alert{viene invalidato} il tof
     dal momento che non potrebbe essere utilizzato nella risposta ad un Poll proveniente
