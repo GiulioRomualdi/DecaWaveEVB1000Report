@@ -1,48 +1,24 @@
-\begin{frame}[shrink=10]{\lstinline[language=C]!rxResponseMaskAnc! - Lato ancora \alert{non} master}
-  L'invio delle risposte da parte delle ancore viene regolato dalla maschera \lstinline[language=C]!rxResponseMaskAnc!.
-  Viene mostrato un esempio in cui l'ancora A2 si comporta da master.
-  \begin{columns}
-    \begin{column}{0.4\textwidth}
-      \begin{center}
-        \includegraphics[width=\linewidth]{rxResponseMaskAnc.pdf}
-      \end{center}
-    \end{column}
-    \begin{column}{0.7\textwidth}
-      \begin{itemize}
-      \item[1)] la maschera viene inizializzata all'arrivo del Poll in tutte le ancore mettendo a $0$ il bit corrispondente alla posizione dell'ancora master
-      \item[2)] dopo che l'ancora $0$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
-      \item[3)] dopo che l'ancora $1$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
-      \item[4)] dopo che l'ancora $3$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
-      \end{itemize}
-    \end{column}
-  \end{columns}
-  \begin{exampleblock}{Regola generale}
-    È il turno dell'ancora i-esima di rispondere se il bit in posizione i-esima è il primo diverso da $0$ da destra.
-  \end{exampleblock}
-\end{frame}
-
-\begin{frame}[shrink = 10]{File instance\_common.c}% - funzioni che gestiscono la maschera \lstinline[language=C]!rxResponseMaskAnc!}
-  \begin{block}{\lstinline[language=C]!uint8 anch_has_responded()!}
-    Restituisce \lstinline[language=C]!True! se l'istanza ha già risposto altrimenti restituisce \lstinline[language=C]!False!.
+\section{instance\_common.c}
+\begin{frame}{File instance\_common.c}% - funzioni che gestiscono la maschera \lstinline[language=C]!rxResponseMaskAnc!}
+  \begin{block}{\lstinline[language=C]!uint8 anch_has_responded()! \newfunction}
+    Restituisce \lstinline[language=C]!True! se l'ancora ha già risposto altrimenti restituisce \lstinline[language=C]!False!.
   \end{block}
-  \begin{block}{\lstinline[language=C]!uint8 anch_tx_or_wait()!}
-    Restituisce \lstinline[language=C]!True! se l'istanza deve spedire la risposta al tag per poi aggiornare la maschera altrimenti restituisce \lstinline[language=C]!False!\\.
-    \textcolor{dgreen}{Attenzione:} l'ancora i-esima deve rispondere se il bit in posizione i-esima della maschera \lstinline[language=C]!rxResponseMaskAnc! è il primo bit diverso da $0$.
-    da destra
+  \begin{block}{\lstinline[language=C]!uint8 anch_tx_or_wait()! \newfunction}
+    Restituisce \lstinline[language=C]!True! se l'ancora deve spedire la risposta al tag altrimenti restituisce \lstinline[language=C]!False!.
   \end{block}
-  \begin{block}{\lstinline[language=C]!void handle_rx_mask_on_timout()!}
-    Gestisce un evento di Timeout di ricezione risposta nella procedura di autoranging.\\
+  \begin{block}{\lstinline[language=C]!void handle_rx_mask_on_timout()! \newfunction}
+    Gestisce il caso in cui una delle ancore non abbia risposto durante la procedura di autoranging.\\
     Trova la posizione del primo bit uguale a $1$ nella maschera \lstinline[language=C]!rxResponseMaskAnc!. La posizione di questo bit corrisponde all'indice dell'ancora che avrebbe
-    dovuto inviare la risposta. Successivamente setta il bit a $0$ così da simulare l'avvenuta ricezione del messaggio.
+    dovuto inviare la risposta. Dunque pone il bit a $0$ così da simulare l'avvenuta ricezione del messaggio.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!int eval_range(double* range, uint32 tof)!}
-    Converte i tof in distanze espressi in \SI{}{\meter}. Restituisce $0$ se il risultato è negativo o maggiore di \SI{20}{\kilo\meter}, 
+  \begin{block}{\lstinline[language=C]!int eval_range(double* range, uint32 tof)! \newfunction}
+    Converte il tof in distanza espressa in \SI{}{\meter}. Restituisce $0$ se il risultato è negativo o maggiore di \SI{20}{\kilo\meter}, 
     $1$ altrimenti.
   \end{block}
-  \begin{block}{\lstinline[language=C]!void instanceclearcounts()!}
+  \begin{block}{\lstinline[language=C]!void instanceclearcounts()! \oldfunction}
     Rispetto alla versione originale di questa funzione viene aggiunta l'inizializzazione di \lstinline[language=C]!anchRngArray[i]! e \lstinline[language=C]!tofAnc!
     dove $i$ varia da $0$ a \lstinline[language=C]!MAX_ANCHOR_LIST_SIZE - 1!
     \begin{C}
@@ -53,28 +29,28 @@
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void instanceclearcounts()!}
+  \begin{block}{\lstinline[language=C]!void instanceclearcounts()! \oldfunction}
     Rispetto alla versione originale di questa funzione viene anche inizializzato il contatore
-    del numero di invii della posizione del Tag al Viewer.
+    del numero di invii della posizione del Tag al 3D Viewer.
     \begin{C}
       instance_data[0].tagPositionSentToViewer = 0;
     \end{C}
-    \textcolor{dgreen}{Attenzione:} ogni \lstinline[language=C]!SEND_ANCHOR_POSITION_EVERY_CYCLES! volte che il tag invia la sua posizione al Viewer tramite seriale viene inviata la posizione delle ancore.
+    \textcolor{dgreen}{Attenzione:} ogni \lstinline[language=C]!SEND_ANCHOR_POSITION_EVERY_CYCLES! volte che il tag invia la sua posizione al 3D Viewer tramite seriale viene inviata la posizione delle ancore.
   \end{block}
-  \begin{block}{\lstinline[language=C]!void instance_set_anch_sleep_delay(int sleepdelay)!}
+  \begin{block}{\lstinline[language=C]!void instance_set_anch_sleep_delay(int sleepdelay)! \newfunction}
     Copia in \lstinline[language=C]!anchSleepTime_ms! il periodo di trasmissione di ogni Poll da parte dell'ancora master.
   \end{block}
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void enable_tag_polling(instance_data_t *inst)!}
+  \begin{block}{\lstinline[language=C]!void enable_tag_polling(instance_data_t *inst)! \newfunction}
     Inizializza il Tag per la normale procedura di ranging. Viene chiamata
     dal tag quando si rende conto che la procedura di autoranging è terminata.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void instance_backtoanchor(instance_data_t *inst)!}
+  \begin{block}{\lstinline[language=C]!void instance_backtoanchor(instance_data_t *inst)! \oldfunction}
     Configura un'ancora per funzionare nella modalità standard di ranging.\\
     Reimposta i Timeout
     \begin{C}
@@ -91,7 +67,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void eval_means(instance_data_t *inst)!}
+  \begin{block}{\lstinline[language=C]!void eval_means(instance_data_t *inst)! \newfunction}
     Calcola le medie dei range accumulati durante la fase di autoranging
     \begin{C}
       for(i = 0; i < MAX_ANCHOR_LIST_SIZE; i++)
@@ -105,33 +81,26 @@
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile,shrink=30]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void inst_processrxtimeout(instance_data_t *inst)!}
-    Gestisce il comportamento dell'ancora master in caso di Timeout.\\
-    Qualora lo stato precedente fosse \lstinline[language=C]!TA_TXPOLL_WAIT_SEND! prepara l'ancora all'invio di un nuovo Poll
-    \begin{C}
-      inst->instToSleep = TRUE;
-      inst->testAppState = TA_TXE_WAIT;
-      inst->nextState = TA_TXPOLL_WAIT_SEND;
-    \end{C}
-    Qualora lo stato precedente fosse \lstinline[language=C]!TA_TXFINAL_WAIT_SEND! prepara l'ancora all'invio di un nuovo Poll    
-    \begin{C}
-      dwt_forcetrxoff();
-      inst->instToSleep = TRUE;
-      inst->testAppState = TA_TXE_WAIT;
-      inst->nextState = TA_TXPOLL_WAIT_SEND;
-    \end{C}
-    Infine gestisce il comportamento dell'ancora \alert{non} master in caso di Timeout riabilitando immediatamente la ricezione
-    \begin{C}
-      inst->testAppState = TA_RXE_WAIT;
-      dwt_setrxtimeout(0);
-    \end{C}
-  \end{block}
-\end{frame}
+%% \begin{frame}[fragile]{File instance\_common.c}
+%%   \begin{block}{\lstinline[language=C]!void inst_processrxtimeout(instance_data_t *inst)! \oldfunction}
+%%     Gestisce il comportamento dell'ancora master in caso di Timeout.\\
+%%     Qualora lo stato precedente fosse \lstinline[language=C]!TA_TXPOLL_WAIT_SEND! oppure \lstinline[language=C]!TA_TXFINAL_WAIT_SEND! prepara l'ancora all'invio di un nuovo Poll
+%%     \begin{C}
+%%       inst->instToSleep = TRUE;
+%%       inst->testAppState = TA_TXE_WAIT;
+%%       inst->nextState = TA_TXPOLL_WAIT_SEND;
+%%     \end{C}
+%%     Infine gestisce il comportamento dell'ancora \alert{non} master in caso di Timeout riabilitando immediatamente la ricezione
+%%     \begin{C}
+%%       inst->testAppState = TA_RXE_WAIT;
+%%       dwt_setrxtimeout(0);
+%%     \end{C}
+%%   \end{block}
+%% \end{frame}
 
 \begin{frame}[fragile, shirnk=30]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!uint8 anc_rx_reenable()!}
-    Gestisce il comportamento dell'ancora master ad ogni ricezione di un messaggio di risposta.\\
+  \begin{block}{\lstinline[language=C]!uint8 anc_rx_reenable()! \newfunction}
+    Gestisce il comportamento dell'ancora \alert{master} ad ogni ricezione di un messaggio di risposta.\\
     La maschera \lstinline[language=C]!mask!
     \begin{C}
     uint8 mask = (~(0x1 << instance_address)) & 0xF;
@@ -147,17 +116,17 @@
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!uint8 anc_rx_reenable()! - continuazione}
+  \begin{block}{\lstinline[language=C]!uint8 anc_rx_reenable()! - continuazione \newfunction}
     Infine se, secondo la maschera, non tutti hanno risposto ma \lstinline[language=C]!instance_data[0].responseTO <= 0! viene
     rilevata una condizione di errore e viene comunque inviato il Final così da permettere alle ancore che hanno risposto di calcolare il TOF.
   \end{block}
-  \begin{block}{\lstinline[language=C]!uint8 anctxorrxreenable(uint16 sourceAddress)!}
-    Eliminate le parti realtive alla procedura di autoranging già implementata nel firmware originario della DecaWave.
+  \begin{block}{\lstinline[language=C]!uint8 anctxorrxreenable(uint16 sourceAddress)! \oldfunction}
+    Eliminate le parti realtive alla procedura di ranging tra le ancore già implementata nel firmware originario della DecaWave.
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile,shrink=30]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!uint8 anc_tx_or_rxreenable_autoranging()!}
+  \begin{block}{\lstinline[language=C]!uint8 anc_tx_or_rxreenable_autoranging()! \newfunction}
     Gestisce i turni di invio delle risposte ad un Poll ricevuto da un'ancora master.\\
     Qualora tutte le ancore avessero risposto (i.e. \lstinline[language=C]!instance_data[0].rxResponseMaskAnc == 0!) l'istanza torna nuovamente in ricezione, disabilitando tutti i
     Timeout, in attesa del messaggio di Final da parte dell'ancora master 
@@ -180,7 +149,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void handle_error_unknownframe(event_data_t dw_event)!}
+  \begin{block}{\lstinline[language=C]!void handle_error_unknownframe(event_data_t dw_event)! \oldfunction}
     Gestisce l'arrivo di un frame non identificato.\\
     Nel caso in cui il tag sia in modalità \lstinline[language=C]!TAG_WAIT! gestisce l'arrivo di un messaggio con modalità di indirizzamento
     errata oppure il fatto che \lstinline[language=C]!rxd->event! sia diverso da \lstinline[language=C]!DWT_SIG_RX_OKAY! e da \lstinline[language=C]!DWT_SIG_RX_TIMEOUT!
@@ -195,9 +164,9 @@
 \end{frame}
 
 \begin{frame}[fragile,shrink=20]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void ancprepareresponse(uint16 sourceAddress, uint8 srcAddr_index, uint8 fcode_index, uint8 *frame, uint32 uTimeStamp)!}
-    È stata rimossa la parte che gestiva la procedura di autoranging già implementata nel firmware della DecaWave. Vengono inoltre copiate nel messaggio
-    di risposta che viene inviato al tag le medie dei range calcolate durante la procedura di autoranging
+  \begin{block}{\lstinline[language=C]!void ancprepareresponse(uint16 sourceAddress, uint8 srcAddr_index, uint8 fcode_index, uint8 *frame, uint32 uTimeStamp)! \oldfunction}
+    È stata rimossa la parte che gestiva la procedura di ranging tra le ancore già implementata nel firmware della DecaWave. Vengono inoltre copiate nel messaggio
+    di risposta, che viene inviato al tag, le medie dei range calcolate durante la procedura di autoranging
     \begin{C}
       for(i = anc_addr + 1, j = 0; i < MAX_ANCHOR_LIST_SIZE; i++, j++)
       {
@@ -214,13 +183,19 @@
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!void anc_prepare_response_autoranging(uint8 srcAddr_index, uint8 fcode_index, uint8 *frame)!}
+  \begin{block}{\lstinline[language=C]!void anc_prepare_response_autoranging(uint8 srcAddr_index, uint8 fcode_index, uint8 *frame)! \newfunction}
     Gestisce la preparazione del messaggio di risposta di un'ancora ad un Poll ricevuto da un'ancora master.
   \end{block}
 \end{frame}
 
 \begin{frame}{File instance\_common.c}
-  La funzione \lstinline[language=C]!void instance_rxcallback(const dwt_callback_data_t *rxd)! ...
+  La funzione \lstinline[language=C]!void instance_rxcallback(const dwt_callback_data_t *rxd)!,
+  si occupa di processare i messaggi ricevuti dal dispositivo,
+  ancora o tag, e ne modifica il comportamento di consenguenza.\\
+  Nel caso in cui il dispositivo abbia ricevuto un messaggio valido, la funzione \lstinline[language=C]!instance_rxcallback!
+  prevede comportamenti diversi in base all'\lstinline[language=C]!fcode! contenuto nel messaggio.\\
+  Di seguito sono descritti i principali \alert{cambiamenti} apportati suddivisi
+  per \lstinline[language=C]!FCODE!.
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c - funzione \lstinline[language=C]!instance_rxcallback!}
@@ -260,7 +235,7 @@
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile, shrink=50]{File instance\_common.c - funzione \lstinline[language=C]!instance_rxcallback!}
+\begin{frame}[fragile, shrink=35]{File instance\_common.c - funzione \lstinline[language=C]!instance_rxcallback!}
   \begin{block}{fcode \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_RESP2!}
     Nel caso in cui un tag sia in modalità \lstinline[language=C]!TAG_WAIT! sono settati a zero i timeout di ricezione
     \begin{C}
@@ -277,7 +252,7 @@
     \begin{C}
       anc_rx_reenable();
     \end{C}
-    Nel caso in cui il messaggio sia ricevuto da un'ancora, \alert{non} master in modalità \lstinline[language=C]!ANCHOR_RNG!, la cui maschera sia
+    Nel caso in cui il messaggio sia ricevuto da un'ancora, \alert{non master} in modalità \lstinline[language=C]!ANCHOR_RNG!, la cui maschera sia
     diversa da $0$ (i.e. non sono state ricevute tutte le risposte dalle altre ancore) \lstinline[language=C]!rxResponseMaskAnc! viene aggiornata e l'invio del
     messaggio viene gestito
     \begin{C}
@@ -295,7 +270,7 @@
 
 \begin{frame}[fragile]{File instance\_common.c - funzione \lstinline[language=C]!instance_rxcallback!}
   \begin{block}{condizione \lstinline[language=C]!rxd->event == DWT_SIG_RX_TIMEOUT!}
-    Nel caso in cui un'ancora \alert{non} master in modalità \lstinline[language=C]!ANCHOR_RNG! non abbia ricevuto la risposta attesa e il Timeout sia scattato viene
+    Nel caso in cui un'ancora \alert{non master} in modalità \lstinline[language=C]!ANCHOR_RNG! non abbia ricevuto la risposta attesa e il Timeout sia scattato viene
     aggiornata la \lstinline[language=C]!rxResponseMaskAnc! e, nel caso sia arrivato il turno per l'istanza di inviare la risposta, risponde all'ancora master così da preservare il funzionamento della procedura di autoranging
     \begin{C}
       handle_rx_mask_on_timout();
@@ -309,7 +284,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{File instance\_common.c}
-  \begin{block}{\lstinline[language=C]!int instance_run()!}
+  \begin{block}{\lstinline[language=C]!int instance_run()! \newfunction}
     Nel caso in cui l'uscita della macchina a stati sia \lstinline[language=C]!INST_DONE_WAIT_FOR_NEXT_EVENT_TO! viene reimpostato il Timeout per l'invio di un nuovo Poll
     da parte dell'ancora \alert{master}
     \begin{C}
