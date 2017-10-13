@@ -1,9 +1,10 @@
+\section{main.c}
 \begin{frame}[fragile, shrink=15]{File main.c}
   Nel seguito sono riportate alcune note riguardanti il file \lstinline[language=C]!main.c!
   \begin{block}{Configurazione Slot and Superframe}
     In generale è stato aggiunto il campo relativo al periodo di trasmissione dei Poll
     da parte di un'ancora master. È stato verificato sperimentalmente che un periodo di \SI{10}{\milli\second} è
-    sufficiente a gestire 4 ancore di cui una master.\\
+    sufficiente a gestire 4 ancore di cui una master.
     \begin{C}
       sfConfig_t sfConfig[4] =
       {
