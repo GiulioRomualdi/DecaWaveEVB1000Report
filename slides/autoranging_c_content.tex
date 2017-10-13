@@ -1,7 +1,9 @@
+\section{autoranging.c e autoranging.h}
 \begin{frame}[fragile]{Files autoranging.c e autoranging.h}
   La funzione
   \begin{C}
     int rangesToPos(double* ranges, float anch_position[][4])
   \end{C}
-  è stata implementata sfruttando l'algoritmo algebrico di calibrazione sviluppato da Federica Fioretti.
+  stima la posizione cartesiana delle ancore a partire dai range medi $<r_{01}>$,  $<r_{02}>$,  $<r_{03}>$, $<r_{12}>$, $<r_{13}>$ e $<r_{23}>$
+  utilizzando l'algoritmo algebrico di calibrazione sviluppato da Federica Fioretti.
 \end{frame}
