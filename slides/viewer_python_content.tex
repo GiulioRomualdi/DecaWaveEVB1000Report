@@ -1,7 +1,7 @@
 \section{Viewer 3D}
 
 \begin{frame}{Viewer 3D}
-  Al fine di valutare \alert{qualitativamente} la validità dell'algoritmo di trilaterazione
+  Al fine di valutare \alert{qualitativamente} la validità dell'algoritmo di calibrazione delle ancore e di trilaterazione
   durante l'esecuzione di un esperimento è stato sviluppato un viewer 3D.\\
   Tale viewer consente di visualizzare la posizione cartesiana di uno o più tag
   mediante uno scatter plot.\\
@@ -32,7 +32,7 @@
   Quando un dispositivo viene disconnesso il thread ad esso associato viene terminato.
 \end{frame}
 
-\begin{frame}[fragile, shrink=30]{Implementazione - classe \lstinline!DeviceManager! - metodo \lstinline!run()!}
+\begin{frame}[fragile, shrink=30, label={device_thread_loop}]{Implementazione - classe \lstinline!DeviceManager! - metodo \lstinline!run()!}
   \begin{center}
     \includegraphics[height=12em]{device_manager}
   \end{center}
@@ -213,7 +213,7 @@
   \begin{Python}
         elseif ...
   \end{Python}
-  mentre decodifica fallisce qualora il tipo di messaggio non sia tra quelli riconosciuti
+  la decodifica fallisce qualora il tipo di messaggio non sia tra quelli riconosciuti
   \begin{Python}
         else:
             return False
@@ -342,7 +342,7 @@
 
   Nel caso di un dispositivo appena disconnesso può accadere che l'ultimo
   messaggio ricevuto dalla porta seriale venga comunque elaborato dal thread
-  associato al dispositivo poichè lo stato del thread (vedi slide ..) non è ancora
+  associato al dispositivo poichè lo stato del thread (slide \ref{device_thread_loop}) non è ancora
   cambiato da \lstinline!running! a \lstinline!stopped! quando il messaggio è arrivato.\\
   In tal caso la notifica viene comunque inviata dal Device e la callback \lstinline!new_data_available!
   viene chiamata ma ormai il \lstinline!device_id! non identifica più un dispositivo valido.
@@ -457,7 +457,7 @@
     def set_tag_raw_position(self, tag_ID, x, y, z):
   \end{Python}
 
-  La posizione viene trasformata mediante trasformazione omogenea (\lstinline!vector_hom_transformation!)per tenere conto del fatto
+  La posizione viene trasformata mediante trasformazione omogenea (\lstinline!vector_hom_transformation!) per tenere conto del fatto
   che i dati sono espressi rispetto ad una terna posizionata all'altezza del piano comune alle
   ancore A0, A1 ed A2. Inoltre, a seconda di come le ancore sono state posizionate, l'asse $z$
   del sistema di riferimento, nel quale sono espresse le posizioni, potrebbe essere rivolto verso il basso.
