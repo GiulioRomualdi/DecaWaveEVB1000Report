@@ -1,8 +1,8 @@
-\begin{frame}[fragile, shrink=10]{Header instance.h - Costanti}
-  Sono state aggiunte le seguenti costanti nel file instance.h
-  %\begin{C}
-  \begin{block}{\lstinline[language=C]!#define NUM_AUTORNG_RNG ...!}
-  %\end{C}
+\section{Header instance.h}
+\begin{frame}[fragile, shrink=10]{Header instance.h - Define}
+  Sono state aggiunte le seguenti define nel file instance.h
+
+  \begin{block}{\lstinline[language=C]!#define NUM_AUTORNG_RNG M/2!}
   Definisce il numero $M$ di misure raccolte durante l'autoranging da ogni ancora master per ogni range di interesse.\\
   \textcolor{dgreen}{esempio:} A0 raccoglie $M$ misure di $r_{01}$, $M$ misure di $r_{02}$ ed $M$ misure di $r_{03}$.
   \end{block}
@@ -18,10 +18,9 @@
     che contiene un byte in più che serve ad indicare alle ancore che l'autoranging per la corrente
     ancora master è terminato.
   \end{block}
-
 \end{frame}
 
-\begin{frame}[fragile]{Header instance.h - Costanti}
+\begin{frame}[fragile]{Header instance.h - Define}
   \begin{block}{\lstinline[language=C]!#define NUM_ALL_AUTORANING_RANGES!}
   Numero complessivo di range che il tag si aspetta di ricevere da tutte le ancore.\\
   Scritto in funzione del numero totale di ancore $N$.\\
@@ -36,7 +35,7 @@
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Header instance.h - Costanti}
+\begin{frame}[fragile]{Header instance.h - Define}
   \begin{block}{\lstinline[language=C]!#define END_AUTORANGING 33!}
     Posizione, all'interno di \lstinline[language=C]!instance_data[0].msg_f.messageData!, del byte
     che indica la fine della procedura di autoranging per una data ancora master.\\
@@ -60,8 +59,8 @@
       ...
     } sfConfig_t;
   \end{C}
-  È stato aggiunto il campo \lstinline[language=C]!anchPollSleepDly! e il campo \lstinline[language=C]!PollSleepDly! è stato rinominato
-  TagPollSleepDly per maggiore chiarezza.\\
+  È stato aggiunto il campo \lstinline[language=C]!anchPollSleepDly! e il campo \lstinline[language=C]!pollSleepDly! è stato rinominato
+  \lstinline[language=C]!tagPollSleepDly! per maggiore chiarezza.\\
   Il campo \lstinline[language=C]!anchPollSleepDly! rappresenta il periodo in \SI{}{\milli\second} di trasmissione dei Poll
   dell'ancora master.
 
@@ -82,12 +81,12 @@
   \begin{block}{\lstinline[language=C]!unsigned long autoranging_poll_time!}
     Se il dispositivo si comporta come ancora in modalità \lstinline[language=C]!ANCHOR_RNG! ed è l'ancora master
     rappresenta l'istante di tempo, secondo l'orologio interno, in cui è stato spedito l'ultimo Poll.\\
-    Utilizzato per capire se sono passati \lstinline[language=C]!anchSleepTime_ms! \SI{}{\milli\second} dall'invio dell'ultimo Poll.\\
+    Utilizzato per capire se sono passati \lstinline[language=C]!anchSleepTime_ms! \SI{}{\milli\second} dall'invio dell'ultimo Poll.
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
-  \begin{block}{}
+\begin{frame}{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
+  \begin{block}{\lstinline[language=C]!unsigned long autoranging_poll_time! - continuazione}
     Se invece il dispositivo si comporta come tag in modalità \lstinline[language=C]!TAG_WAIT! rappresenta l'istante di tempo, secondo l'orologio
     interno, in cui il tag ha ricevuto l'ultimo Poll inviato da un'ancora master.\\
     Utilizzato per capire se sono passati \lstinline[language=C]!AUTORANGING_MAX_TIMEOUT_TAG! \SI{}{\milli\second} dalla ricezione
@@ -100,7 +99,7 @@
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
+\begin{frame}{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
   \begin{block}{\lstinline[language=C]!double anchRngArray[MAX_ANCHOR_LIST_SIZE]!}
     Contiene la somma dei range raccolti da una data ancora.\\
     \textcolor{dgreen}{esempio:} sia l'ancora A1. \lstinline[language=C]!anchrRngArray[0]! contiene la somma dei range $r_{01}$,
@@ -113,9 +112,9 @@
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
+\begin{frame}{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
   \begin{block}{\lstinline[language=C]!uint8 autoRngRangesRxMask!}
-    Bitmask. Il bit i-esimo vale 1 se il tag ha ricevuto la medie dei range dall'ancora i-esima.
+    Bitmask. Il bit i-esimo vale 1 se il tag ha ricevuto \alert{tutte} le medie dei range dall'ancora i-esima.
   \end{block}
   \begin{block}{\lstinline[language=C]!double autoRngRangesArray[NUM_ALL_AUTORANGING_RANGES]!}
     Medie dei range ricevute dal tag.\\
@@ -129,14 +128,51 @@
   \end{block}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Header instance.h - Struct \lstinline[language=C]!instance_data_t!}
   \begin{block}{\lstinline[language=C]!uint8 tagPositionsSentToViewer!}
     Contatore utilizzato per inviare ad intervalli regolari la posizione delle ancore sulla porta seriale
-    virtuale (USB OTG VCP). Tali posizioni sono utilizzate dal Viewer 3D.
+    virtuale (USB OTG VCP). Tali posizioni sono utilizzate dal Viewer 3D (di cui si parlerà nel seguito).
   \end{block}
   \begin{block}{\lstinline[language=C]!uint16 anchorRngMaster!}
     Contiene l'ID corrente dell'ancora master durante l'autoranging.
   \end{block}
+\end{frame}
+
+\begin{frame}[shrink=10]{Header instance.h - Struct \lstinline[language=C]!instance_data_t! - \lstinline[language=C]!rxResponseMaskAnc!}
+  Il campo \lstinline[language=C]!rxResponseMaskAnc! era già presente nella struct \lstinline[language=C]!instance_data_t!.
+  \par
+  Durante la procedura di autoranging l'ancora master mette ad $1$ il bit i-esimo se ha rivecuto risposta dall'ancora i-esima.
+  \par
+  Le ancore \alert{non} master, invece, utilizzano questo campo per decidere quando è il momento di rispondere.
+  Rispetto alla normale procedura di ranging, nella quale la prima ancora a rispondere è sempre l'ancora A0, durante la
+  procedura di autoranging è più complicato, per ogni ancora, decidere quando rispondere. Infatti quando l'ancora master non è A0
+  l'ordine in cui le ancore devono rispondere non è scontato. Ad esempio quando A2 si comporta da ancora master l'ordine di risposta delle ancore
+  dovrà essere A0, A1, A3.\\
+  Per non scrivere un codice ad hoc per specificare l'ordine di risposta al variare di ogni ancora master la maschera \lstinline[language=C]!rxResponseMaskAnc!
+  è stata utilizzata in una maniera non convenzionale come mostato nel dettagliato esempio della slide successiva.
+\end{frame}
+
+\begin{frame}[shrink=10]{Header instance.h - Struct \lstinline[language=C]!instance_data_t! - \lstinline[language=C]!rxResponseMaskAnc!}
+  L'invio delle risposte da parte delle ancore viene regolato dalla maschera \lstinline[language=C]!rxResponseMaskAnc!.
+  Viene mostrato un esempio in cui l'ancora A2 si comporta da master.
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{center}
+        \includegraphics[width=\linewidth]{rxResponseMaskAnc.pdf}
+      \end{center}
+    \end{column}
+    \begin{column}{0.7\textwidth}
+      \begin{itemize}
+      \item[1.] la maschera viene inizializzata all'arrivo del Poll in tutte le ancore mettendo a $0$ il bit corrispondente alla posizione dell'ancora master
+      \item[2.] dopo che l'ancora $0$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
+      \item[3.] dopo che l'ancora $1$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
+      \item[4.] dopo che l'ancora $3$ ha risposto viene posto a $0$ il bit corrispondente alla posizione dell'ancora 
+      \end{itemize}
+    \end{column}
+  \end{columns}
+  \begin{exampleblock}{L'ancora i-esima decide di rispondere}
+    quando è il primo bit (da desta) diverso da $0$ è il bit i-esimo.
+  \end{exampleblock}
 \end{frame}
 
 \begin{frame}[fragile]{Header instance.h - Enum}
@@ -147,5 +183,3 @@
   È stato aggiunto l'enumeratore \lstinline[language=C]!TAG_WAIT!. Esso corrisponde alla modalità in cui il tag
   attende il completamento della procedura di autoranging.
 \end{frame}
-
-
