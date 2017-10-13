@@ -54,7 +54,7 @@
   \begin{center}
     \includegraphics[scale = 0.7]{ranging_with_timings.png}
   \end{center}
-  Il tag invia $Rm_{ps}$, $Rm_{rr}$ e $Rm_{fs}$ all'ancora nel Final
+  Il tag invia $Rm_{ps}$, $Rm_{rr}$ e $Rm_{fs}$ all'ancora nel Final.
 \end{frame}
 
 \begin{frame}{Calcolo del ToF}
@@ -85,7 +85,7 @@
   dove $T_{fd}$ è maggiore del tempo impiegato da \alert{tutte le ancore} per rispondere al tag ed è indicato
   con Final Delay.
   La funzione di \emph{delayed transmission} garantisce che l'RMARKER di spedizione del Final coincida con
-  $Rm_{fs}$
+  $Rm_{fs}$.
 \end{frame}
 
 \begin{frame}{Superframe e frame}
@@ -95,13 +95,13 @@
   Nel dettaglio il tempo è diviso in una serie di \alert{superframe} a loro volta divisi in
   frame.\\
   Il firmware originale prevede 10 frame della durata di \SI{10}{\milli\second}, otto dei quali
-  sono dedicati ad altrettante istanze di ranging, una per ciasciun tag. I restanti due sono dedicati
-  alla ``vecchia'' procedura di ranging tra le ancore. In totale ciascun superframe ha un darata di \SI{100}{\milli\second}.\\
+  sono dedicati ad altrettante istanze di ranging, una per ciascunx tag. I restanti due sono dedicati
+  alla ``vecchia'' procedura di ranging tra le ancore. In totale ciascun superframe ha un durata di \SI{100}{\milli\second}.\\
   La configurazione del firmware originale prevede quindi fino a $8$ tag e $3$/$4$ ancore.
 \end{frame}
 
 \begin{frame}{Esempio di temporizzazione}
-  Un esempo di temporizzazione è mostrato di seguito.
+  Un esempio di temporizzazione è mostrato di seguito.
   \centering
   \includegraphics[width=\linewidth]{frame_superframe_a2a.png}
 \end{frame}
@@ -110,7 +110,7 @@
   Come visibile dallo schema riportato nella slide precedente le ancore rispondono una dopo l'altra a partire
   dall'ancora A0.\\
   Per far si che tale ordine sia rispettato ogni ancora, dopo aver ricevuto il messaggio di Poll, sta in ascolto
-  delle risposte di tutte le altre ancore. Nel caso ideale in cui tutte le ancore rispondo, l'ancora i-esima
+  delle risposte di tutte le altre ancore. Nel caso ideale in cui tutte le ancore rispondono, l'ancora i-esima
   invia la sua riposta quando la seguente condizione viene verificata
   \[
   N + I = M
