@@ -121,7 +121,7 @@
     rilevata una condizione di errore e viene comunque inviato il Final così da permettere alle ancore che hanno risposto di calcolare il TOF.
   \end{block}
   \begin{block}{\lstinline[language=C]!uint8 anctxorrxreenable(uint16 sourceAddress)! \oldfunction}
-    Eliminate le parti realtive alla procedura di ranging tra le ancore già implementata nel firmware originario della DecaWave.
+    Eliminate le parti relative alla procedura di ranging tra le ancore già implementata nel firmware originario della DecaWave.
   \end{block}
 \end{frame}
 
@@ -193,7 +193,7 @@
   si occupa di processare i messaggi ricevuti dal dispositivo,
   ancora o tag, e ne modifica il comportamento di consenguenza.\\
   Nel caso in cui il dispositivo abbia ricevuto un messaggio valido, la funzione \lstinline[language=C]!instance_rxcallback!
-  prevede comportamenti diversi in base all'\lstinline[language=C]!fcode! contenuto nel messaggio.\\
+  prevede comportamenti diversi in base all'\lstinline[language=C]!FCODE! contenuto nel messaggio.\\
   Di seguito sono descritti i principali \alert{cambiamenti} apportati suddivisi
   per \lstinline[language=C]!FCODE!.
 \end{frame}
