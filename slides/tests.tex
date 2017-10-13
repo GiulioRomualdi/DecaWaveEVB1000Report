@@ -1,0 +1,65 @@
+\section{Raccolta, processing e visualizzazione dei risultati in MATLAB}
+
+\begin{frame}{Wiki DecaWaveEVB1000Experiments}
+  Al \href{https://github.com/GiulioRomualdi/DecaWaveEVB1000Experiments/wiki}{\textcolor{blue}{link}} è presente un Wiki che spiega
+  come raccogliere dati di Ranging, Autoranging e Trilaterazione utilizzando il Viewer 3D e/o uno script Python.\\
+  Al medesimo si trovano istruzioni su alcuni script/funzioni MATLAB che consentono di visualizzare i dati e di ottenerne
+  ulteriori in postprocessing (ad esempio ottenere la posizione cartesiana delle ancore a partire dai range medi
+  raccolti durante l'autoranging oppure la trilaterazione a partire dai range tra tag ed ancore raccolti durante
+  un esperimento di trilaterazione).
+  Si invita il lettore interessato a consultare tale Wiki.\\
+  Di seguito invece si riportano alcuni plot ottenuti utilizzando le istruzioni contenute nel Wiki.
+\end{frame}
+
+\begin{frame}{Confronto tra Autoranging, Tag Over Anchor e Laser Meas}
+  Nel plot della slide successiva sono mostrate, per ogni range di interesse, le distribuzioni dei range raccolti
+  \begin{itemize}
+  \item[-] da ogni ancora durante la procedura di autoranging (in azzurro);
+  \item[-] posizionando il tag al di sopra di ogni ancora (procedura Tag Over Anchor) (in rosso);
+  \item[-] utilizzando un laser range measurer (linea blu tratteggiata).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Confronto tra Autoranging, Tag Over Anchor e Laser Meas}
+  \begin{center}
+    \includegraphics[width=\linewidth]{a2a_histograms.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  Nel plot della slide successiva è mostrato il risultato della trilaterazione ottenuto
+  in postprocessing attraverso gli algoritmi DecaWave, DecaWave Cycle e Algebraic.\\
+  Sono state utilizzate le posizioni delle ancore ottenute mediante Autoranging.
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  \begin{center}
+    \includegraphics[height=19em]{3d_path.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  \begin{center}
+    \includegraphics[height=19em]{3d_path_pianta.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  \begin{center}
+    \includegraphics[height=19em]{algorithm_x.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  \begin{center}
+    \includegraphics[height=19em]{algorithm_y.pdf}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione: confrontro tra DecaWave, DecaWave Cycle e Algebraic}
+  \begin{center}
+    \includegraphics[height=19em]{algorithm_z.pdf}
+  \end{center}
+\end{frame}
+
+
