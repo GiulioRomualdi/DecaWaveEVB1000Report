@@ -1,30 +1,30 @@
-\section{Descrizione procedura di ranging tra le ancore presente nel firmware originale}
+s\section{Descrizione procedura di ranging tra le ancore presente nel firmware originale}
 \begin{frame}[shrink=10]{Introduzione}
   Nel seguito viene descritta, mediante un sequence diagram, la procedura di ranging tra le ancore
-  presente nel firmware originale. Nel diagramma verr‡ utilizzata una terminologia similare a quella utilizzata nelle slide precedenti.\\
+  presente nel firmware originale. Nel diagramma verr√† utilizzata una terminologia similare a quella utilizzata nelle slide precedenti.\\
   Nella lettura del diagramma si tenga conto delle seguenti
   \begin{itemize}
   \item[-] i blocchi di colore bianco rappresentano stati della macchina a stati;
   \item[-] i blocchi di colore verde rappresentano le callback di ricezione;
   \item[-] nello schema presentato \alert{solo} le ancore A0 ed A1 inviano il Poll alle altre ancore
-    non perchË lo schema sia semplificato. Infatti il firmware originale prevede
+    non perch√© lo schema sia semplificato. Infatti il firmware originale prevede
     il calcolo di un numero di range tra le ancore limitato a $3$ (ossia $r01$, $r02$ ed $r12$);
   \item[-] si ricordi che la procedura di ranging tra le ancore originale viene eseguita negli ultimi
     due slot di ogni superframe;
-  \item[-] \lstinline!TofArrayAnc! Ë la struttura dati in cui le ancore salavano i tof ricevuti;
-  \item[-] \lstinline!A1 Slot Time! Ë un campo utilizzato dall'ancora A1 per decidere quando Ë il momento
+  \item[-] \lstinline!TofArrayAnc! √® la struttura dati in cui le ancore salavano i tof ricevuti;
+  \item[-] \lstinline!A1 Slot Time! √® un campo utilizzato dall'ancora A1 per decidere quando √® il momento
     di inviare il Poll.
   \end{itemize}
   
 \end{frame}
 
-\begin{frame}{Modalit‡ di Autoranging inclusa nel Firmware}  
+\begin{frame}{Modalit√† di Autoranging inclusa nel Firmware}  
   \begin{center}
     \includegraphics[width=\linewidth]{A2A_oldA0.pdf}
   \end{center}
 \end{frame}
 
-\begin{frame}{Modalit‡ di Autoranging inclusa nel Firmware}
+\begin{frame}{Modalit√† di Autoranging inclusa nel Firmware}
   \begin{center}
     \includegraphics[width=\linewidth]{A2A_oldA1.pdf}
   \end{center}
@@ -35,8 +35,8 @@
   \begin{itemize}
   \item [-] calcola solo 3 su 6 dei range richiesti per valutare la posizione delle ancore;
   \item [-] non spedisce i range calcolati / la loro media ai tag;
-  \item [-] Ë implementata mediante parti di codice specifiche per ogni ancora quindi \alert{non}
-    facilmente estensibile al caso di pi˘ ancore.
+  \item [-] √® implementata mediante parti di codice specifiche per ogni ancora quindi \alert{non}
+    facilmente estensibile al caso di pi√π ancore.
   %\item [-] a parita di scelta del superframe period e dello slot period \alert{riduce} di $N$ il numero
   %  massimo di tag utilizzabili poich√© la procedura avviene negli ultimi $N$\footnote{nel caso del
   %    firmware $N = 2$} slot.
@@ -55,15 +55,15 @@
     j-esima raccoglie $M$ volte i range $r_{j,j+1}$ ... $r_{j,N-1}$ con $N$ il numero di ancore e $j<N$;
   \item [2.] Una volta che tutte le ancore hanno ottenuto le misure ciscuna calcola la media dei range raccolti;
   \item [3.] Mediante un meccanisco di time out il tag esce dalla fase di attesa ed inizia la normale procedura di ranging;
-  \item [4.] ogni ancora, sfruttando il meccanismo di divisione temporale gi‡ descritto nella slide \ref{anchors_responses_turn},
+  \item [4.] ogni ancora, sfruttando il meccanismo di divisione temporale gi√† descritto nella slide \ref{anchors_responses_turn},
     invia la risposta al tag contenente, oltre al tof, i range medi di interesse.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Simmetria}
-  In linea di principio quando l'ancora j-esima esegua la sua fase di raccolta dei range non Ë
+  In linea di principio quando l'ancora j-esima esegua la sua fase di raccolta dei range non √®
   necessario che le ancore con indice $i < j$ partecipino alla procedura poich√© sono di interesse solo
-  i range $r_{j,k}$ con $j < k < N$. Tuttavia facendo partecipare sempre tutte le ancore Ë possibile
+  i range $r_{j,k}$ con $j < k < N$. Tuttavia facendo partecipare sempre tutte le ancore √® possibile
   raccogliere per $M$ volte ciascun range eseguendo $M/2$ istanze di range per ogni ancora invece che $M$.
 
   \begin{exampleblock}{Numero di istanze di range richieste}
@@ -129,23 +129,23 @@
 \begin{frame}[shrink = 10]{Nuova procedura di autoranging}
   Ogni ancora \alert{non} master:
   \begin{itemize}
-  \item [1.] Ogni volta che riceve un messaggio di Poll da un ancora master risponde, quando Ë il proprio turno
+  \item [1.] Ogni volta che riceve un messaggio di Poll da un ancora master risponde, quando √® il proprio turno
     ossia sfruttando il solito meccanismo a divisione di tempi, inviando il tof calcolato nell'istanza precedente;
   \item [2.] Ogni volta che riceve un messaggio di Final da un ancora master calcola il nuovo tof. Inoltre,
     sfruttando il principio di simmetria precedentemente esposto, lo trasforma in range espresso in metri e lo somma
     in una variabile necessaria per calcolare le medie successivamente. Infine, se il messaggio di Final indica che l'ancora master
-    ha terminato il proprio compito, l'ancora incrementa un contatore \lstinline!anchorRngMaster! che le consente di scoprire se Ë arrivato il proprio turno svolgere
+    ha terminato il proprio compito, l'ancora incrementa un contatore \lstinline!anchorRngMaster! che le consente di scoprire se √® arrivato il proprio turno svolgere
     il ruolo di ancora master.
   \end{itemize}
 \end{frame}
 
 \begin{frame}{Termine della procedura di autoranging}
-  Tutte le ancore, eccetto l'ultima, si rendono conto che l'intera procedura Ë terminata quando:
+  Tutte le ancore, eccetto l'ultima, si rendono conto che l'intera procedura √® terminata quando:
   \begin{itemize}
   \item [1.] ricevono il messaggio di Final dall'\alert{ultima} ancora master che indica che ha terminato il suo compito di ancora master;
-  \item [2.] incrementano il contatore \lstinline!anchorRngMaster! e trovano che Ë pari al numero totale di ancore.
+  \item [2.] incrementano il contatore \lstinline!anchorRngMaster! e trovano che √® pari al numero totale di ancore.
   \end{itemize}
-  L'ultima ancora, ossia quella con l'indirizzo pi˘ alto, dato che non riceve il Final da nessun'altra ancora, esegue il controllo sul
+  L'ultima ancora, ossia quella con l'indirizzo pi√π alto, dato che non riceve il Final da nessun'altra ancora, esegue il controllo sul
   contatore nel momento in cui manda il suo ultimo messaggio di Final.
 \end{frame}
 
@@ -242,8 +242,8 @@
   \item[-] \lstinline!PREVIOUS_TOF!: tof calcolato al passo precedente dall'ancora
   \item[-] \lstinline!rangeNum!: range number della trasmissione
   \end{itemize}
-  Durante la procedura di autoranging lo sleep correction non viene utilizzato poichÈ ogni ancora si comporta da master
-  a turno e non pu√≤ accadere che pi˘ ancore master trasmettano contemporaneamente.
+  Durante la procedura di autoranging lo sleep correction non viene utilizzato poich√© ogni ancora si comporta da master
+  a turno e non pu√≤ accadere che pi√π ancore master trasmettano contemporaneamente.
 \end{frame}
 
 \begin{frame}{Maggiori informazioni}
