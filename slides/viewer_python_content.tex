@@ -150,7 +150,7 @@
   \end{Python}
   Nel caso di decodifica avvenuta con successo i nuovi dati sono memorizzati
   nel campo \lstinline!last_data! dell'istanza del \lstinline!Device!, la GUI
-  viene notificata della presenza di nuovi dati e il logger CSV memorizza su file i dati
+  viene notificata della presenza di nuovi dati
     \begin{Python}
                     if evb1000_data.msg_type_decoded:
                         self.last_data = evb1000_data.decoded
@@ -167,10 +167,9 @@
   \end{Python}
 
   Qualora lo stato del \lstinline!Device! diventi \lstinline!stopped!
-  il logger CSV viene chiuso e la porta seriale chiusa
+  la porta seriale viene chiusa
   \begin{Python}
         if self.state == 'stopped':
-            self.logger.close()
             self.close()
 
   \end{Python}
