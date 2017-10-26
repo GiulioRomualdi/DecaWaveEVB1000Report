@@ -3,35 +3,29 @@
 \usetheme[progressbar=head, block=fill]{metropolis}
 \usepackage[utf8]{inputenc}
 \usepackage[makeroom]{cancel}
-\usepackage{amsmath}
 
+\usepackage{amsmath}
 \usepackage{svg}
-
-\usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{mathtools}
-
 \usepackage{siunitx} 
-
 \usepackage{color}
 \usepackage{manfnt}
 \usepackage{graphicx}
 \usepackage[dvipsnames]{xcolor}
-\definecolor{dgreen}{rgb}{0,0.6,0}
 \usepackage{amssymb}
 \usepackage{pifont}
-\usepackage{mathtools}
-\usepackage{multimedia}
-\usepackage{media9}
 \usepackage{centernot}
 \usepackage{amsthm}
 
-% listening
+% colors
+\definecolor{dgreen}{rgb}{0,0.6,0}
 \definecolor{bluekeywords}{rgb}{0.13,0.13,1}
 \definecolor{greencomments}{rgb}{0,0.5,0}
 \definecolor{redstrings}{rgb}{0.9,0,0}
-\usepackage{listings}
 
+% listing
+\usepackage{listings}
 \lstnewenvironment{C}{\lstset{language=C}}{}
 \lstnewenvironment{Python}{\lstset{language=Python}}{}
 \lstset{
@@ -55,19 +49,12 @@
   keywordstyle=[5]{\color{bluekeywords}}
 }
 
-\graphicspath{ {figures/} }
-
-\renewcommand{\vec}[1]{\boldsymbol{#1}}
-\newcommand{\matr}[1]{\mathbf{#1}}
-\newcommand{\cmark}{\ding{51}}%
-\newcommand{\xmark}{\ding{55}}%
-
-\newcommand{\unitvec}[1]{\hat{\boldsymbol{#1}}}
-\newcommand{\transpose}{^{\mathrm{T}}}
 \newcommand{\newfunction}{\hfill \textcolor{dgreen}{new}}
 \newcommand{\oldfunction}{\hfill \textcolor{red}{old}}
 
-\date{xx/10/2017}
+\graphicspath{ {figures/} }
+
+\date{24/10/2017}
 
 \title[]{Implementazione della funzionalità di Autoranging per sistema UWB DecaWaveEVB1000}
 \subtitle{Corso di LM in Ingegneria Robotica ed Automazione \\
