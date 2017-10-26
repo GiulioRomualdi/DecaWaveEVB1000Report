@@ -2,7 +2,7 @@
 
 \begin{frame}{Wiki DecaWaveEVB1000Experiments}
   Al \href{https://github.com/GiulioRomualdi/DecaWaveEVB1000Experiments/wiki}{\textcolor{blue}{link}} è presente un Wiki che spiega
-  come raccogliere dati di Ranging, Autoranging e Trilaterazione utilizzando il Viewer 3D e/o uno script Python.\\
+  come raccogliere dati di Ranging, Autoranging e Trilaterazione utilizzando il software DecaWave EVB1000 Collector sviluppato durante il progetto.\\
   Al medesimo si trovano istruzioni su alcuni script/funzioni MATLAB che consentono di visualizzare i dati e di ottenerne
   ulteriori in postprocessing (ad esempio ottenere la posizione cartesiana delle ancore a partire dai range medi
   raccolti durante l'autoranging oppure la trilaterazione a partire dai range tra tag ed ancore raccolti durante
@@ -23,6 +23,35 @@
 \begin{frame}{Confronto tra Autoranging, Tag Over Anchor e Laser Meas}
   \begin{center}
     \includegraphics[width=\linewidth]{a2a_histograms.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Raccolta range durante la procedura di autoranging}
+  Nei plot delle slide successive vengono mostrate quattro sessioni di raccolta di range durante la procedura di autoranging.
+  In ogni sessione vengono raccolte rispettivamente $500$, $5000$, $25000$ e $50000$ misure di range per ogni range di interesse. Viene inoltre mostrato, per confronto, la misura di range effettuata con il sistema di misurazione laser.
+\end{frame}
+
+\begin{frame}{Trilaterazione con due tag - Range raccolti: $500$}
+  \begin{center}
+    \includegraphics[width=\linewidth]{autoranging_500.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione con due tag - Range raccolti: $5000$}
+  \begin{center}
+    \includegraphics[width=\linewidth]{autoranging_5000.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione con due tag - Range raccolti: $25000$}
+  \begin{center}
+    \includegraphics[width=\linewidth]{autoranging_25000.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Trilaterazione con due tag - Range raccolti: $50000$}
+  \begin{center}
+    \includegraphics[width=\linewidth]{autoranging_50000.png}
   \end{center}
 \end{frame}
 
@@ -98,32 +127,4 @@
   \end{center}
 \end{frame}
 
-\begin{frame}{Raccolta range durante la procedura di autoranging}
-  Nei plot delle slide successive vengono mostrate quattro sessioni di raccolta di range durante la procedura di autoranging.
-  In ogni sessione vengono raccolte rispettivamente $500$, $5000$, $25000$ e $50000$ misure di range per ogni range di interesse. Viene inoltre mostrato, per confronto, la misura di range effettuata con il sistema di misurazione laser.
-\end{frame}
-
-\begin{frame}{Trilaterazione con due tag - Range raccolti: $500$}
-  \begin{center}
-    \includegraphics[width=\linewidth]{autoranging_500.png}
-  \end{center}
-\end{frame}
-
-\begin{frame}{Trilaterazione con due tag - Range raccolti: $5000$}
-  \begin{center}
-    \includegraphics[width=\linewidth]{autoranging_5000.png}
-  \end{center}
-\end{frame}
-
-\begin{frame}{Trilaterazione con due tag - Range raccolti: $25000$}
-  \begin{center}
-    \includegraphics[width=\linewidth]{autoranging_25000.png}
-  \end{center}
-\end{frame}
-
-\begin{frame}{Trilaterazione con due tag - Range raccolti: $50000$}
-  \begin{center}
-    \includegraphics[width=\linewidth]{autoranging_50000.png}
-  \end{center}
-\end{frame}
 
