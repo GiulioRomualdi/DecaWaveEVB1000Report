@@ -1,4 +1,4 @@
-s\section{Descrizione procedura di ranging tra le ancore presente nel firmware originale}
+\section{Descrizione procedura di ranging tra le ancore presente nel firmware originale}
 \begin{frame}[shrink=10]{Introduzione}
   Nel seguito viene descritta, mediante un sequence diagram, la procedura di ranging tra le ancore
   presente nel firmware originale. Nel diagramma verrà utilizzata una terminologia similare a quella utilizzata nelle slide precedenti.\\
@@ -53,7 +53,7 @@ s\section{Descrizione procedura di ranging tra le ancore presente nel firmware o
   \begin{itemize}
   \item [1.] Ogni ancora \alert{a turno} valuta $M$ volte i range di interesse, i.e. l'ancora
     j-esima raccoglie $M$ volte i range $r_{j,j+1}$ ... $r_{j,N-1}$ con $N$ il numero di ancore e $j<N$;
-  \item [2.] Una volta che tutte le ancore hanno ottenuto le misure ciscuna calcola la media dei range raccolti;
+  \item [2.] Una volta che tutte le ancore hanno ottenuto le misure ciascuna calcola la media dei range raccolti;
   \item [3.] Mediante un meccanisco di time out il tag esce dalla fase di attesa ed inizia la normale procedura di ranging;
   \item [4.] ogni ancora, sfruttando il meccanismo di divisione temporale già descritto nella slide \ref{anchors_responses_turn},
     invia la risposta al tag contenente, oltre al tof, i range medi di interesse.
@@ -61,7 +61,7 @@ s\section{Descrizione procedura di ranging tra le ancore presente nel firmware o
 \end{frame}
 
 \begin{frame}{Simmetria}
-  In linea di principio quando l'ancora j-esima esegua la sua fase di raccolta dei range non è
+  In linea di principio quando l'ancora j-esima esegue la sua fase di raccolta dei range non è
   necessario che le ancore con indice $i < j$ partecipino alla procedura poiché sono di interesse solo
   i range $r_{j,k}$ con $j < k < N$. Tuttavia facendo partecipare sempre tutte le ancore è possibile
   raccogliere per $M$ volte ciascun range eseguendo $M/2$ istanze di range per ogni ancora invece che $M$.
@@ -134,8 +134,7 @@ s\section{Descrizione procedura di ranging tra le ancore presente nel firmware o
   \item [2.] Ogni volta che riceve un messaggio di Final da un ancora master calcola il nuovo tof. Inoltre,
     sfruttando il principio di simmetria precedentemente esposto, lo trasforma in range espresso in metri e lo somma
     in una variabile necessaria per calcolare le medie successivamente. Infine, se il messaggio di Final indica che l'ancora master
-    ha terminato il proprio compito, l'ancora incrementa un contatore \lstinline!anchorRngMaster! che le consente di scoprire se è arrivato il proprio turno svolgere
-    il ruolo di ancora master.
+    ha terminato il proprio compito, l'ancora incrementa un contatore \lstinline!anchorRngMaster! che le consente di scoprire se è arrivato il proprio turno di svolgere il ruolo di ancora master.
   \end{itemize}
 \end{frame}
 

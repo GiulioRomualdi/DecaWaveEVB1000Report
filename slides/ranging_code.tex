@@ -8,7 +8,7 @@
   \begin{itemize}
   \item[-] la macchina a stati dal punto di vista di un tag;
   \item[-] la macchina a stati dal punto di vista di un'ancora;
-  \item[-] un sequence diagram che descrive la procedura di ranging;
+  \item[-] un sequence diagram che descrive la ``vecchia'' procedura di ranging;
   \item[-] un sequence diagram che descrive la ``nuova'' procedura di autoranging
     (descritta nel seguito).
   \end{itemize}
@@ -35,7 +35,7 @@
   Il file \lstinline!main.c! contiene, tra le altre cose, la \lstinline!struct sfConfig!
   che definisce la durata del frame e del superframe.\\
   Nel caso in cui gli switch sul PCB siano configurati per la modalità di trasmissione
-  $6.8$mbps e canale $5$ la parte di interesse è quella che segue il commento
+  $6.8$Mbps e canale $5$ la parte di interesse è quella che segue il commento
   \lstinline!//mode 2 - S1: 2 on, 3 off!
   \begin{C}
       sfConfig_t sfConfig[4] =
@@ -61,7 +61,7 @@
   \lstinline[language=C]!int testapprun(instance_data_t *inst, ...)!
   che implementa la macchina a stati del sistema.\\
   Il puntatore \lstinline!inst! contiene l'indirizzo di un'istanza della struttura
-pp  \lstinline!instance_data_t!, definita in \lstinline!instance.h!, che contiene
+  \lstinline!instance_data_t!, definita in \lstinline!instance.h!, che contiene
   principalmente lo stato della macchina a stati.\\
   Di seguito vengono brevemente descritti gli stati. Per ulteriori dettagli si rimanda
   ai diagrammi allegati con il presente report.
@@ -151,7 +151,7 @@ pp  \lstinline!instance_data_t!, definita in \lstinline!instance.h!, che contien
   \item[-] \lstinline!dest_addr!: indirizzo del destinatario
   \item[-] \lstinline!src_addr!: indirizzo del mittente
   \item[-] \lstinline!msg_data!: payload (dipende dal tipo di messaggio)
-  \item[-] \lstinline!crc!: cyclic redundandcy check
+  \item[-] \lstinline!crc!: cyclic redundancy check
   \end{itemize}
   Nelle slide successive viene riportata la struttura del campo \lstinline!msg_data! per gli \lstinline!FCODE! descritti precedentemente.
 \end{frame}

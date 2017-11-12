@@ -243,8 +243,8 @@
     Il tag che riceve una risposta da parte di un'ancora si occupa anche di gestire i range medi
     elaborati durante la fase di autoranging e che ogni ancora si occupa di inviare al tag in risposta
     ad un Poll (oltre al Tof come previsto nel funzionamento normale della procedura di ranging).\\
-    In particolare se il tag non ha ancora ricevuto i range medi dall'ancora avente indirizzo
-    \lstinline[language=C]!srcAddr[0]!
+    In particolare se il tag non ha aveva ancora ricevuto i range medi dall'ancora avente indirizzo
+    \lstinline[language=C]!srcAddr[0]! quando ciò accade
     \begin{C}
       if ((inst->mode == TAG) && (inst->autoRngRangesRxMask & (0x1 << (srcAddr[0]&0x3))) == 0)
       {
@@ -313,7 +313,7 @@
 
 \begin{frame}[fragile]{File instance.c - \lstinline[language=C]!testapprun! - \lstinline[language=C]!TA_RX_WAIT_DATA!}
   \begin{block}{fcode \lstinline[language=C]!RTLS_DEMO_MSG_TAG_FINAL! e \lstinline[language=C]!RTLS_DEMO_MSG_ANCH_FINAL!}
-    Un tag in \lstinline[language=C]!TAG_WAIT! e riabilita la ricezione.\\
+    Un tag in \lstinline[language=C]!TAG_WAIT! riabilita la ricezione.\\
     Un'ancora non master che riceve un \lstinline[language=C]!ANCH_FINAL! calcola il tof, come
     farebbe nel caso in cui ha ricevuto un \lstinline[language=C]!TAG_FINAL!, lo salva in un accumulatore
     \lstinline[language=C]!anchRngArray! ed incrementa il contatore \lstinline[language=C]!anchRngArrayCounter!

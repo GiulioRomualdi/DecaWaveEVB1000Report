@@ -149,7 +149,7 @@
   l'ordine in cui le ancore devono rispondere non è scontato. Ad esempio quando A2 si comporta da ancora master l'ordine di risposta delle ancore
   dovrà essere A0, A1, A3.\\
   Per non scrivere un codice ad hoc per specificare l'ordine di risposta al variare di ogni ancora master la maschera \lstinline[language=C]!rxResponseMaskAnc!
-  è stata utilizzata in una maniera non convenzionale come mostato nel dettagliato esempio della slide successiva.
+  è stata utilizzata come spiegato nell'esempio della slide successiva.
 \end{frame}
 
 \begin{frame}[shrink=10]{Header instance.h - Struct \lstinline[language=C]!instance_data_t! - \lstinline[language=C]!rxResponseMaskAnc!}
@@ -171,7 +171,7 @@
     \end{column}
   \end{columns}
   \begin{exampleblock}{L'ancora i-esima decide di rispondere}
-    quando è il primo bit (da desta) diverso da $0$ è il bit i-esimo.
+    quando è il primo bit (da destra) diverso da $0$ è il bit i-esimo.
   \end{exampleblock}
 \end{frame}
 

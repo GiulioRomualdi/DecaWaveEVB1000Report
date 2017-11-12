@@ -248,7 +248,7 @@
       instance_data[0].responseTO--;
       instance_data[0].rxResponseMaskAnc |= (0x1 << (sourceAddress & 0x3));
     \end{C}
-    Viene inoltre gestito il comportamento dell'ancora \alert{master} (i.e. continua ad aspettare ed invia il messaggio di Final)
+    Viene inoltre gestito il comportamento dell'ancora \alert{master} (i.e. continua ad aspettare o invia il messaggio di Final)
     \begin{C}
       anc_rx_reenable();
     \end{C}
@@ -273,7 +273,7 @@
     Nel caso in cui un'ancora \alert{non master} in modalità \lstinline[language=C]!ANCHOR_RNG! non abbia ricevuto la risposta attesa e il Timeout sia scattato viene
     aggiornata la \lstinline[language=C]!rxResponseMaskAnc! e, nel caso sia arrivato il turno per l'istanza di inviare la risposta, risponde all'ancora master così da preservare il funzionamento della procedura di autoranging
     \begin{C}
-      handle_rx_mask_on_timout();
+      handle_rx_mask_on_timeout();
       anc_tx_or_rxreenable_autoranging();
     \end{C}
     Viene inoltre generato un evento di tipo \lstinline[language=C]!DWT_SIG_RX_TIMEOUT!

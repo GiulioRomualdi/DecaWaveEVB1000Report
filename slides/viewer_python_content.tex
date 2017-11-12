@@ -318,7 +318,7 @@
         devs = self.dev_man.new_devices
   \end{Python}
 
-  e di registrare lo slot \lstinline!new_data_avilable! in modo tale che sia richiamato
+  e di registrare lo slot \lstinline!new_data_available! in modo tale che sia richiamato
   quando uno qualsiasi dei Device notifica la presenza di nuovi dati.
   \begin{Python}
         for dev in devs:
@@ -408,7 +408,7 @@
 
 \begin{frame}[fragile, shrink=10]{Impl.ne - classe \lstinline!EVB1000ViewerMainWindow! -- \lstinline!handle_tag_report_rcvd!}
   In ogni caso  i dati di posizione vengono estratti e passati alla classe \lstinline!mpl_canvas!.\\
-  Ulteriori dettagli sulla classe \lstinline!mpl_canvas! seguono nelle slide successive.
+  Ulteriori dettagli sulla classe \lstinline!MatplotlibViewerCanvas! seguono nelle slide successive.
   \begin{Python}
             x = data['x']
             y = data['y']

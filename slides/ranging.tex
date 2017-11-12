@@ -95,9 +95,9 @@
   Nel dettaglio il tempo è diviso in una serie di \alert{superframe} a loro volta divisi in
   frame.\\
   Il firmware originale prevede 10 frame della durata di \SI{10}{\milli\second}, otto dei quali
-  sono dedicati ad altrettante istanze di ranging, una per ciascunx tag. I restanti due sono dedicati
+  sono dedicati ad altrettante istanze di ranging, una per ciascun tag. I restanti due sono dedicati
   alla ``vecchia'' procedura di ranging tra le ancore. In totale ciascun superframe ha un durata di \SI{100}{\milli\second}.\\
-  La configurazione del firmware originale prevede quindi fino a $8$ tag e $3$/$4$ ancore.
+  La configurazione del firmware originale prevede fino a $8$ tag e $3$/$4$ ancore.
 \end{frame}
 
 \begin{frame}{Esempio di temporizzazione}
@@ -107,10 +107,10 @@
 \end{frame}
 
 \begin{frame}[shrink=10, label={anchors_responses_turn}]{Gestione delle risposte delle ancore}
-  Come visibile dallo schema riportato nella slide precedente le ancore rispondono una dopo l'altra a partire
-  dall'ancora A0.\\
-  Per far si che tale ordine sia rispettato ogni ancora, dopo aver ricevuto il messaggio di Poll, sta in ascolto
-  delle risposte di tutte le altre ancore. Nel caso ideale in cui tutte le ancore rispondono, l'ancora i-esima
+  Come visibile dallo schema riportato nella slide precedente le ancore rispondono una dopo l'altra \alert{a partire
+  dall'ancora A0}.\\
+  Per far si che tale ordine sia rispettato, ogni ancora, dopo aver ricevuto il messaggio di Poll, sta in ascolto
+  delle risposte di tutte le altre ancore. Nel caso ideale in cui tutte le ancore rispondano, l'ancora i-esima
   invia la sua riposta quando la seguente condizione viene verificata
   \[
   N + I = M
@@ -118,12 +118,12 @@
   dove $N$ rappresenta il numero di risposte che l'ancora i-esima si aspetta ancora di ricevere,
   $I$ è l'ID dell'ancora (nel caso di $4$ ancore l'ID è un intero compreso tra $0$ e $3$) ed $M$
   è il numero totale di risposte che l'ancora attende.\\
-  Nel caso in cui una delle risposte non arrivi il sistema prevede un meccanismo di timeout che consente
+  Nel caso in cui una delle risposte non arrivi il sistema prevede un \alert{meccanismo di timeout} che consente
   all'ancora i-esima di inviare comunque la risposta nel momento giusto.
 \end{frame}
 
 \begin{frame}{Gestione di più tag}
-  Al fine di rendere effettivo il protocollo di trasmissione a divisione di tempi
+  Al fine di rendere effettivo il protocollo di trasmissione a divisione di tempi, nel caso di più tag,
   l'ancora A0 ricopre un ruolo di arbitraggio. In particolare corregge i tempi di attivazione
   di ogni tag come spiegato di seguito.\\
   Ogni tag invia un messaggio di Poll ogni \alert{activation period} $a_p$
@@ -135,6 +135,7 @@
   \item[-] $T_{sr}$: alla prima iterazione vale $\SI{10}{\milli\second}$ successivamente vale  $\SI{0}{\milli\second}$
     (detto Sleep Random)
   \item[-] $T_{sc}$: correzione calcolata dall'\alert{Ancora 0} ed inviata al \alert{tag i-esimo} (detto Sleep Correction)
+    nella risposta
   \end{itemize}
 \end{frame}
 
@@ -151,6 +152,7 @@
     T_{sc} = T_{sf} + e \quad \quad \text{altrimenti}
   \end{cases}
   \]
+  Di seguito sono riportati degli esempi
 \end{frame}
 
 \begin{frame}{Calcolo Calcolo del tempo di attivazione $T_{sc} = e$}
